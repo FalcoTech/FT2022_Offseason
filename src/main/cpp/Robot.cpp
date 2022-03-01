@@ -7,7 +7,6 @@
 #include <rev/CANEncoder.h>
 #include <rev/CANSparkMax.h>
 #include <rev/ColorSensorV3.h>
-//#include "rev/CANEncoder.h"
 
 #include <fmt/core.h>
 
@@ -18,6 +17,7 @@
 #include <frc/TimedRobot.h>
 #include <frc/Timer.h>
 #include <frc/fmt/Units.h>
+#include <frc/filter/SlewRateLimiter.h>
 
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>
@@ -126,11 +126,9 @@ void move(double dist){
 void Robot::RobotInit() {
   
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
-  //m_leftLeadMotor.SetInverted(true);
-  m_rightFollowMotor.Follow(m_rightLeadMotor, false);
-  //m_rightLeadMotor.SetInverted(true);
-
   m_leftLeadMotor.SetInverted(true);
+  m_rightFollowMotor.Follow(m_rightLeadMotor, false);
+  m_rightLeadMotor.SetInverted(true);
 
   m_leftLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
@@ -191,15 +189,15 @@ void Robot::AutonomousPeriodic() {
 if (m_timer.Get() < 2_s) {
       // Drive forwards half speed
       m_leftLeadMotor.Set(0.5);
-        m_leftFollowMotor.Set(0.5);
+        // m_leftFollowMotor.Set(0.5);
         m_rightLeadMotor.Set(0.5);
-        m_rightFollowMotor.Set(0.5);
+        // m_rightFollowMotor.Set(0.5);
     } else {
       // Stop robot
        m_leftLeadMotor.Set(0);
-        m_leftFollowMotor.Set(0);
+        // m_leftFollowMotor.Set(0);
         m_rightLeadMotor.Set(0);
-        m_rightFollowMotor.Set(0);
+        // m_rightFollowMotor.Set(0);
     }        
 
 }
@@ -239,16 +237,17 @@ void Robot::TeleopPeriodic() {
   ******************************************************************************************************************************/
 
   if (CoPilot->GetRightTriggerAxis() >= SmartDashboard::GetNumber("Min Intake Percent", 0.5)){
-    m_intakeFrontMotor.Set(CoPilot->GetAxisCount());
-    m_intakeBackMotor.Set(CoPilot->GetAxisCount());
+    m_intakeFrontMotor.Set(CoPilot->GetRightTriggerAxis());
+    m_intakeBackMotor.Set(CoPilot->GetRightTriggerAxis());
   }
   else if (CoPilot->GetLeftTriggerAxis()){
-    m_intakeBackMotor.Set(-(CoPilot->GetAxisCount()));
-    m_intakeFrontMotor.Set(-(CoPilot->GetAxisCount()));
+    m_intakeFrontMotor.Set(-(CoPilot->GetLeftTriggerAxis()));
+    m_intakeBackMotor.Set(-(CoPilot->GetLeftTriggerAxis()));
+    
   }
   else {
-    m_intakeBackMotor.Set(0);
     m_intakeFrontMotor.Set(0);
+    m_intakeBackMotor.Set(0);
   }
 
   if (CoPilot->GetAButtonPressed()){
@@ -289,13 +288,16 @@ void Robot::TeleopPeriodic() {
   /******************************************************************************************************************************
   DRIVE
   ******************************************************************************************************************************/
-  float right = Pilot->GetRightY();
-  float left = Pilot->GetLeftY();;
+  double right = Pilot->GetRightY();
+  double left = Pilot->GetLeftY();
 
-        m_leftLeadMotor.Set(left);
-        m_leftFollowMotor.Set(left);
-        m_rightLeadMotor.Set(right);
-        m_rightFollowMotor.Set(right);
+
+  m_drive.TankDrive(left, right);
+
+        // m_leftLeadMotor.Set(left);
+        // m_leftFollowMotor.Set(left);
+        // m_rightLeadMotor.Set(right);
+        // m_rightFollowMotor.Set(right);
  
 /* 
  if (Pilot->GetLeftY()){
