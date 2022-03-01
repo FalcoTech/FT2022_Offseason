@@ -68,11 +68,11 @@ rev::SparkMaxRelativeEncoder m_rightEncoder = m_rightLeadMotor.GetEncoder();
 frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
 frc2::PIDController driveControl{drivekP, drivekI, drivekD};
 
-// WPI_PigeonIMU _gyro(1);
-// Rotation2d getGyroAngle(){
-//   double gyroroation = _gyro.GetFusedHeading();
-//   return Rotation2d(units::degree_t(gyroroation));
-// }
+WPI_PigeonIMU _gyro(1);
+Rotation2d getGyroAngle(){
+  double gyroroation = _gyro.GetFusedHeading();
+  return Rotation2d(units::degree_t(gyroroation));
+}
 
 //shooter
 WPI_TalonFX m_shooterMotorL{11};
@@ -94,13 +94,14 @@ frc::SimpleMotorFeedforward<units::meters> feedfwd(0.22_V, 1.98 * 1_V * 1_s / 1_
 static const int m_intakeFrontID = 20, m_intakeBackID = 21;
 rev::CANSparkMax m_intakeFrontMotor{m_intakeFrontID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax m_intakeBackMotor{m_intakeBackID, rev::CANSparkMax::MotorType::kBrushless};
-DoubleSolenoid sol_IntakeSolenoid(frc::PneumaticsModuleType::REVPH, 2, 3);
+DoubleSolenoid sol_Intake(1, frc::PneumaticsModuleType::REVPH, 2, 3);
 
 //Lift and Climb
 static const int m_leftLiftID = 31, m_rightLiftID = 30;
 rev::CANSparkMax m_leftLiftMotor{m_leftLiftID, rev::CANSparkMax::MotorType::kBrushless};
-DoubleSolenoid sol_climber(frc::PneumaticsModuleType::REVPH, 0, 1);
 rev::CANSparkMax m_rightLiftMotor{m_rightLiftID, rev::CANSparkMax::MotorType::kBrushless};
+DoubleSolenoid sol_Climber(1, frc::PneumaticsModuleType::REVPH, 4, 5);
+
 
 //Controllers
 XboxController  *Pilot = new XboxController(0);
@@ -213,10 +214,10 @@ void Robot::TeleopPeriodic() {
   ******************************************************************************************************************************/
 
   if (CoPilot->GetPOV() == 90){
-    sol_climber.Set(frc::DoubleSolenoid::Value::kForward);
+    sol_Climber.Set(frc::DoubleSolenoid::Value::kForward);
   }
   else if (CoPilot->GetPOV() == 270){
-    sol_climber.Set(frc::DoubleSolenoid::Value::kReverse);
+    sol_Climber.Set(frc::DoubleSolenoid::Value::kReverse);
   }
 
   if (CoPilot->GetPOV() == 0){
@@ -251,11 +252,11 @@ void Robot::TeleopPeriodic() {
   }
 
   if (CoPilot->GetAButtonPressed()){
-    sol_IntakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+    sol_Intake.Set(frc::DoubleSolenoid::Value::kForward);
   }
   
   else if (CoPilot->GetBButtonPressed()){
-    sol_IntakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+    sol_Intake.Set(frc::DoubleSolenoid::Value::kReverse);
   }
 
   /******************************************************************************************************************************
