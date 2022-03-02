@@ -67,6 +67,8 @@ rev::SparkMaxRelativeEncoder m_leftDriveEncoder = m_leftLeadMotor.GetEncoder();
 rev::SparkMaxRelativeEncoder m_rightDriveEncoder = m_rightLeadMotor.GetEncoder();
 
 frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
+string currentDriveMode = "tank";
+string altDriveMode = "curve";
 frc2::PIDController driveControl{drivekP, drivekI, drivekD};
 
 WPI_PigeonIMU _gyro(1);
@@ -219,7 +221,7 @@ void Robot::TeleopPeriodic() {
   // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
   SmartDashboard::PutNumber("Climber Solenoid Forward Channel ", sol_Climber.GetFwdChannel());
   SmartDashboard::PutNumber("Climber Solenoid Reverse Channel ", sol_Climber.GetRevChannel());
-    // TODO Add Conversion Factors with the contructors
+  // TODO Add Conversion Factors with the contructors
   SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
   SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
   if (CoPilot->GetPOV() == 90){
@@ -321,8 +323,17 @@ void Robot::TeleopPeriodic() {
   SmartDashboard::PutNumber("Shifter Solenoid Reverse Channel ", sol_Shift.GetRevChannel());
   SmartDashboard::PutNumber("Left Drive Velocity", m_leftDriveEncoder.GetVelocity());
   SmartDashboard::PutNumber("Right Drive Velocity", m_rightDriveEncoder.GetVelocity());
+  SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
 
-  m_drive.TankDrive(leftJoystick, rightJoystick, true);
+  if (currentDriveMode == "tank"){
+    m_drive.TankDrive(leftJoystick, rightJoystick, true);
+  }
+  else if (currentDriveMode == "curve"){
+    m_drive.CurvatureDrive(leftJoystick, rightJoystick);
+  }
+  if (Pilot->GetBackButton()){
+    currentDriveMode.swap(altDriveMode);
+  }
 
 
   if (Pilot->GetRightBumper()){
