@@ -296,8 +296,8 @@ void Robot::TeleopPeriodic() {
   SmartDashboard::PutNumber("shooter Target RPM", shooterTargetRPM);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   SmartDashboard::PutNumber("shooter Output", output);
-  m_shooterMotorL.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output);
-  m_shooterMotorR.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output); 
+  // m_shooterMotorL.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output);
+  // m_shooterMotorR.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output); 
   
   /******************************************************************************************************************************
   DRIVE
@@ -308,28 +308,7 @@ void Robot::TeleopPeriodic() {
 
   m_drive.TankDrive(left, right, true);
 
-        // m_leftLeadMotor.Set(left);
-        // m_leftFollowMotor.Set(left);
-        // m_rightLeadMotor.Set(right);
-        // m_rightFollowMotor.Set(right);
- 
-/* 
- if (Pilot->GetLeftY()){
-    m_leftLeadMotor.Set(Pilot->GetAxisCount());
-    m_leftFollowMotor.Set(Pilot->GetAxisCount());
-  }
- else {
-    m_leftLeadMotor.Set(0);
-    m_leftFollowMotor.Set(0);
-  }
-if (Pilot->GetRightY()){
-    m_rightLeadMotor.Set(Pilot->GetAxisCount());
-    m_rightFollowMotor.Set(Pilot->GetAxisCount());
-  }
- else {
-    m_rightLeadMotor.Set(0);
-    m_rightFollowMotor.Set(0);
-  }  
+
   if (Pilot->GetRightBumperPressed()){
     sol_Shift.Set(frc::DoubleSolenoid::Value::kForward);
   }
@@ -337,8 +316,8 @@ if (Pilot->GetRightY()){
   else if (Pilot->GetLeftBumperPressed()){
     sol_Shift.Set(frc::DoubleSolenoid::Value::kReverse);
   }
-*/
 }
+
 void Robot::DisabledInit() {}
 
 void Robot::DisabledPeriodic() {}
