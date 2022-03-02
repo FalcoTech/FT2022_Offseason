@@ -63,8 +63,8 @@ double drivekP = 6e-5, drivekI = 1e-6, drivekD = 0, drivekIz = 0, drivekFF = 0.0
 rev::SparkMaxPIDController m_leftPID = m_leftLeadMotor.GetPIDController();
 rev::SparkMaxPIDController m_rightPID = m_rightLeadMotor.GetPIDController();
 
-rev::SparkMaxRelativeEncoder m_leftEncoder = m_leftLeadMotor.GetEncoder();
-rev::SparkMaxRelativeEncoder m_rightEncoder = m_rightLeadMotor.GetEncoder();
+rev::SparkMaxRelativeEncoder m_leftDriveEncoder = m_leftLeadMotor.GetEncoder();
+rev::SparkMaxRelativeEncoder m_rightDriveEncoder = m_rightLeadMotor.GetEncoder();
 
 frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
 frc2::PIDController driveControl{drivekP, drivekI, drivekD};
@@ -96,12 +96,16 @@ frc::SimpleMotorFeedforward<units::meters> feedfwd(0.22_V, 1.98 * 1_V * 1_s / 1_
 static const int m_intakeFrontID = 20, m_intakeBackID = 21;
 rev::CANSparkMax m_intakeFrontMotor{m_intakeFrontID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax m_intakeBackMotor{m_intakeBackID, rev::CANSparkMax::MotorType::kBrushless};
+rev::SparkMaxRelativeEncoder m_intakeFrontEncoder = m_intakeFrontMotor.GetEncoder();
+rev::SparkMaxRelativeEncoder m_intakeBackEncoder = m_intakeBackMotor.GetEncoder();
 DoubleSolenoid sol_Intake(1, frc::PneumaticsModuleType::REVPH, 2, 3);
 
 //Lift and Climb
 static const int m_leftLiftID = 31, m_rightLiftID = 30;
 rev::CANSparkMax m_leftLiftMotor{m_leftLiftID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax m_rightLiftMotor{m_rightLiftID, rev::CANSparkMax::MotorType::kBrushless};
+rev::SparkMaxRelativeEncoder m_leftLiftEncoder = m_leftLiftMotor.GetEncoder();
+rev::SparkMaxRelativeEncoder m_rightLiftEncoder = m_rightLiftMotor.GetEncoder();
 DoubleSolenoid sol_Climber(1, frc::PneumaticsModuleType::REVPH, 4, 5);
 
 
@@ -113,11 +117,11 @@ double joy_lStick_Y_deadband = 0.05, joy_rStick_Y_deadband = 0.05, joy_rStick_X_
 frc::Timer m_timer;
 
 double getLeftEncoderDist(){
-  return m_leftEncoder.GetPosition() / 42/*ticks per rev*/ * driveGearRatio * (2 * M_PI * 0.0762)/*dist per rev in meters*/;
+  return m_leftDriveEncoder.GetPosition() / 42/*ticks per rev*/ * driveGearRatio * (2 * M_PI * 0.0762)/*dist per rev in meters*/;
 }
 
 double getRightEncoderDist(){
-  return m_rightEncoder.GetPosition() / 42 * driveGearRatio * (2 * M_PI * 0.0762);
+  return m_rightDriveEncoder.GetPosition() / 42 * driveGearRatio * (2 * M_PI * 0.0762);
 }
 /*
 void move(double dist){
@@ -151,8 +155,8 @@ void Robot::RobotInit() {
   m_rightPID.SetFF(drivekFF);
   m_rightPID.SetOutputRange(drivekMinOutput, drivekMaxOutput);
 
-  m_rightEncoder.SetPosition(0.0);
-  m_leftEncoder.SetPosition(0.0);
+  m_rightDriveEncoder.SetPosition(0.0);
+  m_leftDriveEncoder.SetPosition(0.0);
 
   m_intakeBackMotor.SetInverted(false);
   m_intakeFrontMotor.SetInverted(false);
@@ -174,8 +178,8 @@ void Robot::RobotPeriodic() {
 }
 
 void Robot::AutonomousInit() {
-  m_leftEncoder.SetPosition(0);
-  m_rightEncoder.SetPosition(0);
+  m_leftDriveEncoder.SetPosition(0);
+  m_rightDriveEncoder.SetPosition(0);
   //autonState = 0;
   _gyro.SetFusedHeading(0);
   m_leftLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -207,12 +211,17 @@ if (m_timer.Get() < 2_s) {
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  SmartDashboard::PutNumber("Encoder", m_leftEncoder.GetPosition());
+  
     
   /******************************************************************************************************************************
   LIFT
   ******************************************************************************************************************************/
-
+  // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
+  SmartDashboard::PutNumber("Climber Solenoid Forward Channel ", sol_Climber.GetFwdChannel());
+  SmartDashboard::PutNumber("Climber Solenoid Reverse Channel ", sol_Climber.GetRevChannel());
+    // TODO Add Conversion Factors with the contructors
+  SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
+  SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
   if (CoPilot->GetPOV() == 90){
     sol_Climber.Set(frc::DoubleSolenoid::Value::kForward);
   }
@@ -237,7 +246,10 @@ void Robot::TeleopPeriodic() {
   /******************************************************************************************************************************
   INTAKE
   ******************************************************************************************************************************/
-
+  SmartDashboard::PutNumber("Intake Solenoid Forward Channel ", sol_Intake.GetFwdChannel());
+  SmartDashboard::PutNumber("Intake Solenoid Reverse Channel ", sol_Intake.GetRevChannel());
+  SmartDashboard::PutNumber("Current Front Intake Velocity", m_intakeFrontEncoder.GetVelocity());
+  // SmartDashboard::PutNumber("Current Back Intake Velocity", m_intakeBackEncoder.GetVelocity());
   if (CoPilot->GetRightTriggerAxis() >= SmartDashboard::GetNumber("Min Intake Percent", 0.5)){
     m_intakeFrontMotor.Set(CoPilot->GetRightTriggerAxis());
     m_intakeBackMotor.Set(CoPilot->GetRightTriggerAxis());
@@ -252,11 +264,11 @@ void Robot::TeleopPeriodic() {
     m_intakeBackMotor.Set(0);
   }
 
-  if (CoPilot->GetAButtonPressed()){
+  if (CoPilot->GetXButton()){
     sol_Intake.Set(frc::DoubleSolenoid::Value::kForward);
   }
   
-  else if (CoPilot->GetBButtonPressed()){
+  else if (CoPilot->GetYButton()){
     sol_Intake.Set(frc::DoubleSolenoid::Value::kReverse);
   }
 
@@ -264,16 +276,21 @@ void Robot::TeleopPeriodic() {
   SHOOTER
   ******************************************************************************************************************************/
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
-  if (CoPilot->GetAButtonPressed()){
+  SmartDashboard::PutNumber("shooter RPM", shooterRPM);
+  SmartDashboard::PutNumber("shooter Target RPM", shooterTargetRPM);
+  double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
+  SmartDashboard::PutNumber("shooter Output", output);
+  
+  if (CoPilot->GetAButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
-    // m_shooterMotorL.Set(0.9);
-    // m_shooterMotorR.Set(0.9);
-    m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, 0.75));
-    m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, 0.75));
+    m_shooterMotorL.Set(0.9);
+    m_shooterMotorR.Set(0.9);
+    // m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
+    // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
 
   }
-  else if (CoPilot->GetBButtonPressed()){
+  else if (CoPilot->GetBButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
     m_shooterMotorL.Set(0.5);
@@ -292,28 +309,27 @@ void Robot::TeleopPeriodic() {
     m_shooterMotorR.Set(0);
 
   }
-  SmartDashboard::PutNumber("shooter RPM", shooterRPM);
-  SmartDashboard::PutNumber("shooter Target RPM", shooterTargetRPM);
-  double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
-  SmartDashboard::PutNumber("shooter Output", output);
   // m_shooterMotorL.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output);
   // m_shooterMotorR.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output); 
   
   /******************************************************************************************************************************
   DRIVE
   ******************************************************************************************************************************/
-  double right = Pilot->GetRightY();
-  double left = Pilot->GetLeftY();
+  double rightJoystick = Pilot->GetRightY();
+  double leftJoystick = Pilot->GetLeftY();
+  SmartDashboard::PutNumber("Shifter Solenoid Forward Channel ", sol_Shift.GetFwdChannel());
+  SmartDashboard::PutNumber("Shifter Solenoid Reverse Channel ", sol_Shift.GetRevChannel());
+  SmartDashboard::PutNumber("Left Drive Velocity", m_leftDriveEncoder.GetVelocity());
+  SmartDashboard::PutNumber("Right Drive Velocity", m_rightDriveEncoder.GetVelocity());
+
+  m_drive.TankDrive(leftJoystick, rightJoystick, true);
 
 
-  m_drive.TankDrive(left, right, true);
-
-
-  if (Pilot->GetRightBumperPressed()){
+  if (Pilot->GetRightBumper()){
     sol_Shift.Set(frc::DoubleSolenoid::Value::kForward);
   }
   
-  else if (Pilot->GetLeftBumperPressed()){
+  else if (Pilot->GetLeftBumper()){
     sol_Shift.Set(frc::DoubleSolenoid::Value::kReverse);
   }
 }
