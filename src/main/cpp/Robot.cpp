@@ -134,9 +134,9 @@ void move(double dist){
 void Robot::RobotInit() {
   
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
-  m_leftLeadMotor.SetInverted(true);
+  // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
-  m_rightLeadMotor.SetInverted(true);
+  // m_rightLeadMotor.SetInverted(true);
 
   m_leftLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
