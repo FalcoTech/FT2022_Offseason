@@ -266,11 +266,11 @@ void Robot::TeleopPeriodic() {
     m_intakeBackMotor.Set(0);
   }
 
-  if (CoPilot->GetXButton()){
+  if (CoPilot->GetLeftBumper()){
     sol_Intake.Set(frc::DoubleSolenoid::Value::kForward);
   }
   
-  else if (CoPilot->GetYButton()){
+  else if (CoPilot->GetRightBumper()){
     sol_Intake.Set(frc::DoubleSolenoid::Value::kReverse);
   }
 
@@ -278,10 +278,10 @@ void Robot::TeleopPeriodic() {
   SHOOTER
   ******************************************************************************************************************************/
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
-  SmartDashboard::PutNumber("shooter RPM", shooterRPM);
-  SmartDashboard::PutNumber("shooter Target RPM", shooterTargetRPM);
+  SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
+  SmartDashboard::PutNumber("Shooter Target RPM", shooterTargetRPM);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
-  SmartDashboard::PutNumber("shooter Output", output);
+  SmartDashboard::PutNumber("Shooter Output", output);
   
   if (CoPilot->GetAButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
@@ -297,6 +297,12 @@ void Robot::TeleopPeriodic() {
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
     m_shooterMotorL.Set(0.5);
     m_shooterMotorR.Set(0.5);
+  }
+  else if (CoPilot->GetXButton()){
+    shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
+    m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
+    m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
+
   }
   //else if (cont_Partner->GetCircleButtonPressed()){
   //  shooterTargetRPM = SmartDashboard::GetNumber("shooter Fender RPM", 5742 * shooterGearRatio * 0.4);
