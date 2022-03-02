@@ -26,6 +26,7 @@
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/controller/PIDController.h>
+#include <frc/controller/BangBangController.h>
 #include <frc/DigitalInput.h>
 #include <frc/encoder.h>
 
@@ -79,6 +80,7 @@ WPI_TalonFX m_shooterMotorL{11};
 WPI_TalonFX m_shooterMotorR{10};
 frc2::PIDController m_shooterPID{0.0008, 0, 0, units::time::second_t(50)};
 //frc2::PIDController m_shooterPID{}
+frc::BangBangController m_shooterBangBang;
 double shooterGearRatio = 1;
 double shooterMaxRPM = 5742/*max rpm of falcon 500 no load -10%*/ * shooterGearRatio, shooterMinRPM = 5742 * -0.1/*percent output limit for reverse*/ * shooterGearRatio;
 double shooterTargetRPM = 0;
@@ -265,8 +267,11 @@ void Robot::TeleopPeriodic() {
   if (CoPilot->GetAButtonPressed()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
-    m_shooterMotorL.Set(0.9);
-    m_shooterMotorR.Set(0.9);
+    // m_shooterMotorL.Set(0.9);
+    // m_shooterMotorR.Set(0.9);
+    m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, 0.75));
+    m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, 0.75));
+
   }
   else if (CoPilot->GetBButtonPressed()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
@@ -301,7 +306,7 @@ void Robot::TeleopPeriodic() {
   double left = Pilot->GetLeftY();
 
 
-  m_drive.TankDrive(left, right);
+  m_drive.TankDrive(left, right, true);
 
         // m_leftLeadMotor.Set(left);
         // m_leftFollowMotor.Set(left);
