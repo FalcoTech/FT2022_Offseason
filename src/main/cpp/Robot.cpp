@@ -169,6 +169,9 @@ void Robot::RobotInit() {
   m_rightLiftMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_leftLiftMotor.SetInverted(true);
   m_rightLiftMotor.SetInverted(false);
+  
+  m_leftLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
+  m_rightLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
 
   _gyro.SetFusedHeading(0);
 
