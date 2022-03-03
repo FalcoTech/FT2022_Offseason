@@ -70,6 +70,7 @@ frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
 string currentDriveMode = "tank";
 string altDriveMode = "curve";
 frc2::PIDController driveControl{drivekP, drivekI, drivekD};
+frc::SlewRateLimiter<units::scalar> m_speedLimiter{3 / 1_s};
 
 WPI_PigeonIMU _gyro(1);
 Rotation2d getGyroAngle(){
@@ -219,8 +220,8 @@ void Robot::TeleopPeriodic() {
   LIFT
   ******************************************************************************************************************************/
   // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
-  SmartDashboard::PutNumber("Climber Solenoid Forward Channel ", sol_Climber.GetFwdChannel());
-  SmartDashboard::PutNumber("Climber Solenoid Reverse Channel ", sol_Climber.GetRevChannel());
+  SmartDashboard::PutNumber("Climber Solenoid", sol_Climber.Get());
+  // SmartDashboard::PutNumber("Climber Solenoid Reverse", sol_Climber.Get());
   // TODO Add Conversion Factors with the contructors
   SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
   SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
@@ -240,10 +241,10 @@ double leftLift = CoPilot->GetLeftY();
   /******************************************************************************************************************************
   INTAKE
   ******************************************************************************************************************************/
-  SmartDashboard::PutNumber("Intake Solenoid Forward Channel ", sol_Intake.GetFwdChannel());
-  SmartDashboard::PutNumber("Intake Solenoid Reverse Channel ", sol_Intake.GetRevChannel());
+  SmartDashboard::PutNumber("Intake Solenoid", sol_Intake.Get());
+  // SmartDashboard::PutNumber("Intake Solenoid Reverse", sol_Intake.Get());
   SmartDashboard::PutNumber("Current Front Intake Velocity", m_intakeFrontEncoder.GetVelocity());
-  // SmartDashboard::PutNumber("Current Back Intake Velocity", m_intakeBackEncoder.GetVelocity());
+  SmartDashboard::PutNumber("Current Back Intake Velocity", m_intakeBackEncoder.GetVelocity());
   if (CoPilot->GetRightTriggerAxis() >= SmartDashboard::GetNumber("Min Intake Percent", 0.5)){
     m_intakeFrontMotor.Set(CoPilot->GetRightTriggerAxis());
     m_intakeBackMotor.Set(CoPilot->GetRightTriggerAxis());
@@ -317,8 +318,8 @@ double leftLift = CoPilot->GetLeftY();
   ******************************************************************************************************************************/
   double rightJoystick = Pilot->GetRightY();
   double leftJoystick = Pilot->GetLeftY();
-  SmartDashboard::PutNumber("Shifter Solenoid Forward Channel ", sol_Shift.GetFwdChannel());
-  SmartDashboard::PutNumber("Shifter Solenoid Reverse Channel ", sol_Shift.GetRevChannel());
+  SmartDashboard::PutNumber("Shifter Solenoid", sol_Shift.Get());
+  // SmartDashboard::PutNumber("Shifter Solenoid Reverse", sol_Shift.Get());
   SmartDashboard::PutNumber("Left Drive Velocity", m_leftDriveEncoder.GetVelocity());
   SmartDashboard::PutNumber("Right Drive Velocity", m_rightDriveEncoder.GetVelocity());
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
@@ -327,9 +328,9 @@ double leftLift = CoPilot->GetLeftY();
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){
-    m_drive.CurvatureDrive(leftJoystick, rightJoystick);
+    m_drive.CurvatureDrive(leftJoystick, rightJoystick, false);
   }
-  if (Pilot->GetBackButton()){
+  if (Pilot->GetBackButtonPressed()){
     currentDriveMode.swap(altDriveMode);
   }
 
