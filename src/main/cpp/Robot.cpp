@@ -231,18 +231,10 @@ void Robot::TeleopPeriodic() {
     sol_Climber.Set(frc::DoubleSolenoid::Value::kReverse);
   }
 
-  if (CoPilot->GetPOV() == 0){
-    m_leftLiftMotor.Set(0.5);
-    m_rightLiftMotor.Set(0.5);
-  }
-  else if (CoPilot->GetPOV() == 180){
-    m_leftLiftMotor.Set(-0.5);
-    m_rightLiftMotor.Set(-0.5);
-  }
-  else {
-    m_leftLiftMotor.Disable();
-    m_rightLiftMotor.Disable();
-  }
+double leftLift = CoPilot->GetLeftY();
+
+    m_leftLiftMotor.Set(leftLift);
+    m_rightLiftMotor.Set(leftLift);
 
   
   /******************************************************************************************************************************
