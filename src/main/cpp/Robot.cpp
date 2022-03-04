@@ -37,6 +37,7 @@
 #include "networktables/NetworkTableInstance.h"
 #include <cameraserver/CameraServer.h>
 
+
 #include <iostream>
 #include <thread>
 #include <math.h>
@@ -84,6 +85,8 @@ WPI_TalonFX m_shooterMotorR{10};
 frc2::PIDController m_shooterPID{0.0008, 0, 0, units::time::second_t(50)};
 //frc2::PIDController m_shooterPID{}
 frc::BangBangController m_shooterBangBang;
+frc::SlewRateLimiter<units::revolutions_per_minute> m_shooterSlewLimiter{1500_rpm / 0.5_s};
+
 double shooterGearRatio = 1;
 double shooterMaxRPM = 5742/*max rpm of falcon 500 no load -10%*/ * shooterGearRatio, shooterMinRPM = 5742 * -0.1/*percent output limit for reverse*/ * shooterGearRatio;
 double shooterTargetRPM = 0;
@@ -175,7 +178,28 @@ void Robot::RobotInit() {
 
   _gyro.SetFusedHeading(0);
 
+
+  m_shooterMotorL.SetInverted(false);
+  m_shooterMotorR.SetInverted(true);
   
+  m_shooterMotorL.Config_kF(0, 0.3, 10);
+  m_shooterMotorL.Config_kP(0, 0.1, 10);
+  m_shooterMotorL.Config_kI(0, 0.0, 10);
+  m_shooterMotorL.Config_kD(0, 0.0, 10);
+  m_shooterMotorL.ConfigNominalOutputForward(0, 10);
+  m_shooterMotorL.ConfigNominalOutputReverse(0, 10);
+  m_shooterMotorL.ConfigPeakOutputForward(1, 10);
+  m_shooterMotorL.ConfigPeakOutputReverse(0, 10);
+
+  m_shooterMotorR.Config_kF(0, 0.3, 10);
+  m_shooterMotorR.Config_kP(0, 0.1, 10);
+  m_shooterMotorR.Config_kI(0, 0.0, 10);
+  m_shooterMotorR.Config_kD(0, 0.0, 10);
+  m_shooterMotorR.ConfigNominalOutputForward(0, 10);
+  m_shooterMotorR.ConfigNominalOutputReverse(0, 10);
+  m_shooterMotorR.ConfigPeakOutputForward(1, 10);
+  m_shooterMotorR.ConfigPeakOutputReverse(0, 10);
+
 }
 
 void Robot::RobotPeriodic() {
@@ -274,16 +298,19 @@ double leftLift = CoPilot->GetLeftY();
   SHOOTER
   ******************************************************************************************************************************/
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
+   double targetVelocity_Per100ms = 500 * 4096 / 600;
   SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
-  SmartDashboard::PutNumber("Shooter Target RPM", shooterTargetRPM);
+  SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   SmartDashboard::PutNumber("Shooter Output", output);
-  
+ 
+
+
   if (CoPilot->GetAButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
-    m_shooterMotorL.Set(0.9);
-    m_shooterMotorR.Set(0.9);
+    m_shooterMotorL.Set(ControlMode::Velocity, targetVelocity_Per100ms);
+    m_shooterMotorR.Set(ControlMode::Velocity, targetVelocity_Per100ms);
     // m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
     // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
 
@@ -291,15 +318,15 @@ double leftLift = CoPilot->GetLeftY();
   else if (CoPilot->GetBButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
-    m_shooterMotorL.Set(0.5);
-    m_shooterMotorR.Set(0.5);
+    m_shooterMotorL.Set(ControlMode::PercentOutput, 0.5);
+    m_shooterMotorR.Set(ControlMode::PercentOutput, 0.5);
   }
-  else if (CoPilot->GetXButton()){
-    shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
-    m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
-    m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
+  // else if (CoPilot->GetXButton()){
+    // shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
+    // m_shooterMotorL.Set(m_shooterSlewLimiter.Calculate(shooterRPM, shooterTargetRPM));
+    // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
 
-  }
+  // }
   //else if (cont_Partner->GetCircleButtonPressed()){
   //  shooterTargetRPM = SmartDashboard::GetNumber("shooter Fender RPM", 5742 * shooterGearRatio * 0.4);
   //  m_shooterPID.SetSetpoint(shooterTargetRPM);
