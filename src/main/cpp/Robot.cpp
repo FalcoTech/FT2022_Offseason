@@ -49,7 +49,8 @@ using namespace rev;
 
 //General 
 Compressor _compressor(frc::PneumaticsModuleType::REVPH);
-
+Orchestra _orchestra;
+string song = "short_imp.chrp";
 
 //Drive Base
 static const int m_leftLeadID = 41, m_rightLeadID = 40, m_leftFollowID = 43, m_rightFollowID = 42;
@@ -165,7 +166,7 @@ void Robot::RobotInit() {
   m_leftDriveEncoder.SetPosition(0.0);
 
   m_intakeBackMotor.SetInverted(false);
-  m_intakeFrontMotor.SetInverted(false);
+  m_intakeFrontMotor.SetInverted(true);
   
   m_rightLiftMotor.Follow(m_leftLiftMotor);
   m_leftLiftMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -178,6 +179,8 @@ void Robot::RobotInit() {
 
   _gyro.SetFusedHeading(0);
 
+  _orchestra.AddInstrument(m_shooterMotorL);
+  _orchestra.AddInstrument(m_shooterMotorR);
 
   m_shooterMotorL.SetInverted(false);
   m_shooterMotorR.SetInverted(true);
@@ -238,9 +241,13 @@ if (m_timer.Get() < 2_s) {
 
 }
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+  // _orchestra.LoadMusic(song);
+}
 
 void Robot::TeleopPeriodic() {
+  _orchestra.Play();
+
   
     
   /******************************************************************************************************************************
