@@ -30,8 +30,10 @@ class Robot : public frc::TimedRobot {
   const std::string kAutoNameCustom = "My Auto";
   std::string m_autoSelected;
 
-  void MoveClimber(double distance);
+  void MoveClimber(double rotations);
   void AutoShootAtTargetPRM(double RPM);
+  void DriveRobot(double distance);
+  void DriveRobot(units::seconds time);
   void RotateRobot(units::degrees degrees);
   void ExtendClimber();
   void RetractClimber();

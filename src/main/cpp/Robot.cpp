@@ -162,7 +162,18 @@ void AutoShootAtTargetPRM(double rpm){
     }
   }
 }
-void RotateRobot(units::degrees degrees){}
+
+void DriveRobot(double distance){
+  // I'm not sure whether this is worth setting up until PID stuff is done. Previous Code had PID controller for distance
+
+}
+
+void DriveRobot(units::seconds time){
+  // Ask Andy how to do timed code
+}
+void RotateRobot(units::degrees degrees){
+  //Not sure how to handle this until gyro is working
+}
 void ExtendClimber(){
   sol_Climber.Set(DoubleSolenoid::kForward);
 }
@@ -287,8 +298,6 @@ void Robot::TeleopPeriodic() {
   ******************************************************************************************************************************/
   // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
   SmartDashboard::PutNumber("Climber Solenoid", sol_Climber.Get());
-  // SmartDashboard::PutNumber("Climber Solenoid Reverse", sol_Climber.Get());
-  // TODO Add Conversion Factors with the contructors
   SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
   SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
  
