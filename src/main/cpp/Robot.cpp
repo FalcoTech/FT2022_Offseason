@@ -24,7 +24,7 @@
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
 #include <frc/kinematics/DifferentialDriveOdometry.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
-#include <frc/motorcontrol/PWMSparkMax.h>
+#include <frc/controller/ElevatorFeedforward.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/BangBangController.h>
 #include <frc/DigitalInput.h>
@@ -110,6 +110,14 @@ rev::CANSparkMax m_rightLiftMotor{m_rightLiftID, rev::CANSparkMax::MotorType::kB
 rev::SparkMaxRelativeEncoder m_leftLiftEncoder = m_leftLiftMotor.GetEncoder();
 rev::SparkMaxRelativeEncoder m_rightLiftEncoder = m_rightLiftMotor.GetEncoder();
 DoubleSolenoid sol_Climber(1, frc::PneumaticsModuleType::REVPH, 4, 5);
+rev::SparkMaxPIDController m_leftLiftPIDController = m_leftLiftMotor.GetPIDController();
+rev::SparkMaxPIDController m_rightLiftPIDController = m_rightLiftMotor.GetPIDController();
+double kLiftP = 0.1, kLiftI = 1e-4, kLiftD = 1, kLiftIz = 0, kLiftFF = 0, kLiftMaxOutput = 0.2, kLiftMinOutput = -0.2;
+// units::volts kS = 3_V;
+// units::volts kG = 6_V;
+
+
+// ElevatorFeedforward<units::inches> liftFeedforward(kS, kG, kV, kA);
 
 
 //Controllers
@@ -132,7 +140,47 @@ void move(double dist){
   //DifferentialDrive::
 }
 */
+
+void MoveClimber(double rotations){
+
+  // double currentLeftLiftPostion = m_leftLiftEncoder.GetPosition();
+  // double currentRightLiftPostion = m_rightLiftEncoder.GetPosition();
+  m_leftLiftPIDController.SetReference(rotations, rev::ControlType::kPosition);
+  m_rightLiftPIDController.SetReference(rotations, rev::ControlType::kPosition);
+
+}
+void AutoShootAtTargetPRM(double rpm){
+  m_intakeBackEncoder.SetPosition(0);
+  if (m_shooterMotorL.GetSelectedSensorVelocity() < rpm ){ // Should this be a while loop?
+    m_shooterMotorL.Set(ControlMode::Velocity, rpm);
+    m_shooterMotorR.Set(ControlMode::Velocity, rpm);
+  }
+  else if(m_shooterMotorL.GetSelectedSensorVelocity() == rpm){
+    double currentBackEncoderPostion = m_intakeBackEncoder.GetPosition();
+    if (currentBackEncoderPostion < 2000 /* Revolutions to drive the intake for?? */){
+      m_intakeBackMotor.Set(0.5); //Might need to be negative if this is the wrong direction (Probably should invert the controller so + = in)
+    }
+  }
+}
+void RotateRobot(units::degrees degrees){}
+void ExtendClimber(){
+  sol_Climber.Set(DoubleSolenoid::kForward);
+}
+void RetractClimber(){
+  sol_Climber.Set(DoubleSolenoid::kReverse);
+}
+void ExtendIntake(){
+  sol_Intake.Set(DoubleSolenoid::kForward);
+}
+void RetractIntake(){
+  sol_Intake.Set(DoubleSolenoid::kReverse);
+}
+
+
 void Robot::RobotInit() {
+
+  //Clear Config Settings?
+  // m_leftLiftMotor.RestoreFactoryDefaults();
   
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
@@ -170,8 +218,23 @@ void Robot::RobotInit() {
   m_leftLiftMotor.SetInverted(true);
   m_rightLiftMotor.SetInverted(false);
   
-  m_leftLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
-  m_rightLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
+  // m_leftLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
+  // m_rightLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
+
+
+  m_leftLiftPIDController.SetP(kLiftP);
+  m_leftLiftPIDController.SetI(kLiftI);
+  m_leftLiftPIDController.SetD(kLiftD);
+  m_leftLiftPIDController.SetIZone(kLiftIz);
+  m_leftLiftPIDController.SetFF(kLiftFF);
+  m_leftLiftPIDController.SetOutputRange(kLiftMinOutput, kLiftMaxOutput);
+
+  m_rightLiftPIDController.SetP(kLiftP);
+  m_rightLiftPIDController.SetI(kLiftI);
+  m_rightLiftPIDController.SetD(kLiftD);
+  m_rightLiftPIDController.SetIZone(kLiftIz);
+  m_rightLiftPIDController.SetFF(kLiftFF);
+  m_rightLiftPIDController.SetOutputRange(kLiftMinOutput, kLiftMaxOutput);
 
   _gyro.SetFusedHeading(0);
 
@@ -228,6 +291,7 @@ void Robot::TeleopPeriodic() {
   // TODO Add Conversion Factors with the contructors
   SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
   SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
+ 
   if (CoPilot->GetPOV() == 90){
     sol_Climber.Set(frc::DoubleSolenoid::Value::kForward);
   }
