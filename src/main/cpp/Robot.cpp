@@ -172,15 +172,20 @@ void DriveRobot(double distance){
 
 }
 
-void DriveRobot(units::seconds time){
-  // Ask Andy how to do timed code
+void DriveRobotForward(units::second_t time){
+  //Probably should have gear shift check in here
+  m_drive.TankDrive(0.5, 0.5);
+  Wait(time);
+  m_drive.TankDrive(0, 0);
 }
+
 void RotateRobot(units::degrees degrees){
   //Not sure how to handle this until gyro is working
 }
 void ExtendClimber(){
   sol_Climber.Set(DoubleSolenoid::kForward);
 }
+//All Solenoid stuff might be backwards needs tested
 void RetractClimber(){
   sol_Climber.Set(DoubleSolenoid::kReverse);
 }
@@ -190,8 +195,25 @@ void ExtendIntake(){
 void RetractIntake(){
   sol_Intake.Set(DoubleSolenoid::kReverse);
 }
+void HighGear(){
+  sol_Shift.Set(DoubleSolenoid::kForward);
+}
+void LowGear(){
+  sol_Shift.Set(DoubleSolenoid::kReverse);
+}
 
+void RunIntake(units::second_t time){
+  m_intakeFrontMotor.Set(0.9);
+  m_intakeBackMotor.Set(0.9);
+  Wait(time);
+  m_intakeFrontMotor.Set(0);
+  m_intakeBackMotor.Set(0);
+}
 
+void RunIntake(units::second_t time, bool invert){
+  //for running backwards want Gavin to write
+
+}
 void Robot::RobotInit() {
 
   //Clear Config Settings?
@@ -283,7 +305,16 @@ void Robot::RobotPeriodic() {
   //position = odometry->Update(getGyroAngle(), units::meter_t(getLeftEncoderDist()), units::meter_t(getRightEncoderDist()));
   //autoAimPID.SetSetpoint(0);
 }
-
+/******************************************************************************************************************************
+                                             ###    ##     ## ########  #######  
+                                            ## ##   ##     ##    ##    ##     ## 
+                                           ##   ##  ##     ##    ##    ##     ## 
+                                          ##     ## ##     ##    ##    ##     ## 
+                                          ######### ##     ##    ##    ##     ## 
+                                          ##     ## ##     ##    ##    ##     ## 
+                                          ##     ##  #######     ##     #######
+                                                      AUTO                                                                                             
+******************************************************************************************************************************/
 void Robot::AutonomousInit() {
   m_leftDriveEncoder.SetPosition(0);
   m_rightDriveEncoder.SetPosition(0);
@@ -325,7 +356,14 @@ void Robot::TeleopPeriodic() {
   
     
   /******************************************************************************************************************************
-  LIFT
+                                                ##       #### ######## ######## 
+                                                ##        ##  ##          ##    
+                                                ##        ##  ##          ##    
+                                                ##        ##  ######      ##    
+                                                ##        ##  ##          ##    
+                                                ##        ##  ##          ##    
+                                                ######## #### ##          ## 
+                                                          LIFT   
   ******************************************************************************************************************************/
   // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
   SmartDashboard::PutNumber("Climber Solenoid", sol_Climber.Get());
@@ -346,7 +384,14 @@ double leftLift = CoPilot->GetLeftY();
 
   
   /******************************************************************************************************************************
-  INTAKE
+                                      #### ##    ## ########    ###    ##    ## ######## 
+                                       ##  ###   ##    ##      ## ##   ##   ##  ##       
+                                       ##  ####  ##    ##     ##   ##  ##  ##   ##       
+                                       ##  ## ## ##    ##    ##     ## #####    ######   
+                                       ##  ##  ####    ##    ######### ##  ##   ##       
+                                       ##  ##   ###    ##    ##     ## ##   ##  ##       
+                                      #### ##    ##    ##    ##     ## ##    ## ######## 
+                                                          INTAKE
   ******************************************************************************************************************************/
   SmartDashboard::PutNumber("Intake Solenoid", sol_Intake.Get());
   // SmartDashboard::PutNumber("Intake Solenoid Reverse", sol_Intake.Get());
@@ -376,7 +421,14 @@ double leftLift = CoPilot->GetLeftY();
   }
 
   /******************************************************************************************************************************
-  SHOOTER
+                                ######  ##     ##  #######   #######  ######## ######## ########  
+                              ##    ## ##     ## ##     ## ##     ##    ##    ##       ##     ## 
+                              ##       ##     ## ##     ## ##     ##    ##    ##       ##     ## 
+                               ######  ######### ##     ## ##     ##    ##    ######   ########  
+                                    ## ##     ## ##     ## ##     ##    ##    ##       ##   ##   
+                              ##    ## ##     ## ##     ## ##     ##    ##    ##       ##    ##  
+                               ######  ##     ##  #######   #######     ##    ######## ##     ##  
+                                                          SHOOTER
   ******************************************************************************************************************************/
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 4096/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
    double targetVelocity_Per100ms = 500 * 4096 / 600;
@@ -425,7 +477,14 @@ double leftLift = CoPilot->GetLeftY();
   // m_shooterMotorR.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output); 
   
   /******************************************************************************************************************************
-  DRIVE
+                                      ########  ########   #### ##     ## ######## 
+                                      ##     ## ##     ##   ##  ##     ## ##       
+                                      ##     ## ##     ##   ##  ##     ## ##       
+                                      ##     ## ########    ##  ##     ## ######   
+                                      ##     ## ##   ##     ##   ##   ##  ##       
+                                      ##     ## ##    ##    ##    ## ##   ##       
+                                      ########  ##     ##  ####    ###    ######## 
+                                                        DRIVE
   ******************************************************************************************************************************/
   double rightJoystick = Pilot->GetRightY();
   double leftJoystick = Pilot->GetLeftY();

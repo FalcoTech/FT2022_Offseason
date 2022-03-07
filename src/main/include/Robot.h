@@ -33,10 +33,14 @@ class Robot : public frc::TimedRobot {
   void MoveClimber(double rotations);
   void AutoShootAtTargetPRM(double RPM);
   void DriveRobot(double distance);
-  void DriveRobot(units::seconds time);
+  void DriveRobot(units::second_t time);
   void RotateRobot(units::degrees degrees);
   void ExtendClimber();
   void RetractClimber();
   void ExtendIntake();
   void RetractIntake();
+  void HighGear();
+  void LowGear();
+  void RunIntake(units::second_t time);
+  void RunIntake(units::second_t time, bool invert);
 };
