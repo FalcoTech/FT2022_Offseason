@@ -23,17 +23,10 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
   //void SimulationInit() override;
   //void SimulationPeriodic() override;
-
- private:
-  frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Default";
-  const std::string kAutoNameCustom = "My Auto";
-  std::string m_autoSelected;
-
   void MoveClimber(double rotations);
   void AutoShootAtTargetPRM(double RPM);
   void DriveRobot(double distance);
-  void DriveRobot(units::second_t time);
+  void DriveRobotForward(units::second_t time);
   void RotateRobot(units::degrees degrees);
   void ExtendClimber();
   void RetractClimber();
@@ -43,4 +36,10 @@ class Robot : public frc::TimedRobot {
   void LowGear();
   void RunIntake(units::second_t time);
   void RunIntake(units::second_t time, bool invert);
+
+ private:
+  frc::SendableChooser<std::string> m_chooser;
+  const std::string kAutoNameDefault = "Default";
+  const std::string kAutoNameCustom = "My Auto";
+  std::string m_autoSelected;
 };

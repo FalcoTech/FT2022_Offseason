@@ -100,7 +100,7 @@ DifferentialDriveKinematics kinematics(units::length::meter_t(0.7633));
 frc::SimpleMotorFeedforward<units::meters> feedfwd(0.22_V, 1.98 * 1_V * 1_s / 1_m, 0.2 * 1_V * 1_s * 1_s / 1_m);
 
 //Intake, Ball runs
-static const int m_intakeFrontID = 20, m_intakeBackID = 21;
+static const int m_intakeFrontID = 21, m_intakeBackID = 20;
 rev::CANSparkMax m_intakeFrontMotor{m_intakeFrontID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax m_intakeBackMotor{m_intakeBackID, rev::CANSparkMax::MotorType::kBrushless};
 rev::SparkMaxRelativeEncoder m_intakeFrontEncoder = m_intakeFrontMotor.GetEncoder();
@@ -145,15 +145,15 @@ void move(double dist){
 }
 */
 
-void MoveClimber(double rotations){
+void Robot::MoveClimber(double rotations){
 
   // double currentLeftLiftPostion = m_leftLiftEncoder.GetPosition();
   // double currentRightLiftPostion = m_rightLiftEncoder.GetPosition();
-  m_leftLiftPIDController.SetReference(rotations, rev::ControlType::kPosition);
-  m_rightLiftPIDController.SetReference(rotations, rev::ControlType::kPosition);
+  // m_leftLiftPIDController.SetReference(rotations, rev::ControlType::kPosition);
+  // m_rightLiftPIDController.SetReference(rotations, rev::ControlType::kPosition);
 
 }
-void AutoShootAtTargetPRM(double rpm){
+void Robot::AutoShootAtTargetPRM(double rpm){
   m_intakeBackEncoder.SetPosition(0);
   if (m_shooterMotorL.GetSelectedSensorVelocity() < rpm ){ // Should this be a while loop?
     m_shooterMotorL.Set(ControlMode::Velocity, rpm);
@@ -167,41 +167,41 @@ void AutoShootAtTargetPRM(double rpm){
   }
 }
 
-void DriveRobot(double distance){
+void Robot::DriveRobot(double distance){
   // I'm not sure whether this is worth setting up until PID stuff is done. Previous Code had PID controller for distance
 
 }
 
-void DriveRobotForward(units::second_t time){
+void Robot::DriveRobotForward(units::second_t time){
   //Probably should have gear shift check in here
   m_drive.TankDrive(0.5, 0.5);
   Wait(time);
   m_drive.TankDrive(0, 0);
 }
 
-void RotateRobot(units::degrees degrees){
+void Robot::RotateRobot(units::degrees degrees){
   //Not sure how to handle this until gyro is working
 }
-void ExtendClimber(){
+void Robot::ExtendClimber(){
   sol_Climber.Set(DoubleSolenoid::kForward);
 }
-void RetractClimber(){
+void Robot::RetractClimber(){
   sol_Climber.Set(DoubleSolenoid::kReverse);
 }
-void ExtendIntake(){
-  sol_Intake.Set(DoubleSolenoid::kForward);  
+void Robot::ExtendIntake(){
+  sol_Intake.Set(DoubleSolenoid::kReverse);  
 }
-void RetractIntake(){
-  sol_Intake.Set(DoubleSolenoid::kReverse);
+void Robot::RetractIntake(){
+  sol_Intake.Set(DoubleSolenoid::kForward);
 }
-void HighGear(){
+void Robot::HighGear(){
   sol_Shift.Set(DoubleSolenoid::kReverse);
 }
-void LowGear(){
+void Robot::LowGear(){
   sol_Shift.Set(DoubleSolenoid::kForward);
 }
 
-void RunIntake(units::second_t time){
+void Robot::RunIntake(units::second_t time){
   m_intakeFrontMotor.Set(0.9);
   m_intakeBackMotor.Set(0.9);
   Wait(time);
@@ -209,7 +209,7 @@ void RunIntake(units::second_t time){
   m_intakeBackMotor.Set(0);
 }
 
-void RunIntake(units::second_t time, bool invert){
+void Robot::RunIntake(units::second_t time, bool invert){
   //for running backwards want Gavin to write
 
 }
@@ -217,11 +217,10 @@ void Robot::RobotInit() {
 
   //Clear Config Settings?
   // m_leftLiftMotor.RestoreFactoryDefaults();
-  
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
-  // m_rightLeadMotor.SetInverted(true);
+  m_rightLeadMotor.SetInverted(true);
 
   m_leftLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
@@ -410,6 +409,9 @@ double leftLift = CoPilot->GetLeftY();
   else {
     m_intakeFrontMotor.Set(0);
     m_intakeBackMotor.Set(0);
+  }
+  if (CoPilot->GetXButton()){
+    m_intakeFrontMotor.Set(0.75);
   }
 
   if (CoPilot->GetLeftBumperPressed()){
