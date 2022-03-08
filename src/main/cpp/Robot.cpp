@@ -257,8 +257,8 @@ void Robot::RobotInit() {
   m_leftLiftMotor.SetInverted(true);
   m_rightLiftMotor.SetInverted(false);
   
-  // m_leftLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
-  // m_rightLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
+  m_leftLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
+  m_rightLiftEncoder.SetPositionConversionFactor( M_PI * 0.75 / 9);
 
 
   m_leftLiftPIDController.SetP(kLiftP);
@@ -328,8 +328,6 @@ void Robot::AutonomousInit() {
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     m_timer.Reset();
     m_timer.Start();
-  RunIntake(5_s);
-  RunIntake(0.5_s, true);
 }
 
 void Robot::AutonomousPeriodic() {
@@ -397,8 +395,6 @@ double leftLift = CoPilot->GetLeftY();
                                       #### ##    ##    ##    ##     ## ##    ## ######## 
                                                           INTAKE
   ******************************************************************************************************************************/
-  SmartDashboard::PutNumber("Intake Solenoid", sol_Intake.Get());
-  // SmartDashboard::PutNumber("Intake Solenoid Reverse", sol_Intake.Get());
   SmartDashboard::PutNumber("Current Front Intake Velocity", m_intakeFrontEncoder.GetVelocity());
   SmartDashboard::PutNumber("Current Back Intake Velocity", m_intakeBackEncoder.GetVelocity());
   if (CoPilot->GetRightTriggerAxis() >= SmartDashboard::GetNumber("Min Intake Percent", 0.5)){
@@ -427,7 +423,7 @@ double leftLift = CoPilot->GetLeftY();
   }
 
   /******************************************************************************************************************************
-                                ######  ##     ##  #######   #######  ######## ######## ########  
+                               ######  ##     ##  #######   #######  ######## ######## ########  
                               ##    ## ##     ## ##     ## ##     ##    ##    ##       ##     ## 
                               ##       ##     ## ##     ## ##     ##    ##    ##       ##     ## 
                                ######  ######### ##     ## ##     ##    ##    ######   ########  
@@ -436,24 +432,20 @@ double leftLift = CoPilot->GetLeftY();
                                ######  ##     ##  #######   #######     ##    ######## ##     ##  
                                                           SHOOTER
   ******************************************************************************************************************************/
-  double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 4096/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
-  // double targetVelocity_Per100ms = 500 * 4096 / 600;
+  double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
+  // double targetVelocity_Per100ms = 2000 * 2048 / 600; //Gives weird numbers so we aren't using this anymore (Maybe fixed?)
   double targetVelocity_Per100ms = 2000;
   SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
-  // SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 4096);
+  SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 4096);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   SmartDashboard::PutNumber("Shooter Output", output);
  
-
 
   if (CoPilot->GetAButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
     m_shooterMotorL.Set(ControlMode::Velocity, targetVelocity_Per100ms);
     m_shooterMotorR.Set(ControlMode::Velocity, targetVelocity_Per100ms);
-    // m_shooterMotorL.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
-    // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
-
   }
   else if (CoPilot->GetBButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
@@ -465,15 +457,6 @@ double leftLift = CoPilot->GetLeftY();
     // shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
     // m_shooterMotorL.Set(m_shooterSlewLimiter.Calculate(shooterRPM, shooterTargetRPM));
     // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
-
-  // }
-  //else if (cont_Partner->GetCircleButtonPressed()){
-  //  shooterTargetRPM = SmartDashboard::GetNumber("shooter Fender RPM", 5742 * shooterGearRatio * 0.4);
-  //  m_shooterPID.SetSetpoint(shooterTargetRPM);
-  //}
-  //else if (cont_Partner->GetCrossButtonPressed()){
-  //  shooterTargetRPM = 0;
-  //  m_shooterPID.SetSetpoint(shooterTargetRPM);
   //}
   else {
     m_shooterMotorL.Set(0);
@@ -495,10 +478,8 @@ double leftLift = CoPilot->GetLeftY();
   ******************************************************************************************************************************/
   double rightJoystick = Pilot->GetRightY();
   double leftJoystick = Pilot->GetLeftY();
-  SmartDashboard::PutNumber("Shifter Solenoid", sol_Shift.Get());
-  // SmartDashboard::PutNumber("Shifter Solenoid Reverse", sol_Shift.Get());
-  SmartDashboard::PutNumber("Left Drive Velocity", m_leftDriveEncoder.GetVelocity());
-  SmartDashboard::PutNumber("Right Drive Velocity", m_rightDriveEncoder.GetVelocity());
+  SmartDashboard::PutNumber("Left Drive Velocity", -1 * m_leftDriveEncoder.GetVelocity());
+  SmartDashboard::PutNumber("Right Drive Velocity", -1 * m_rightDriveEncoder.GetVelocity());
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
 
   if (currentDriveMode == "tank"){
@@ -510,6 +491,7 @@ double leftLift = CoPilot->GetLeftY();
   if (Pilot->GetBackButtonPressed()){
     currentDriveMode.swap(altDriveMode);
   }
+  //TODO for Gavin: Add a button to switch forwards and backwards
 
 
   if (Pilot->GetRightBumper()){
