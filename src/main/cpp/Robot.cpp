@@ -214,9 +214,44 @@ void Robot::RunIntake(units::second_t time, bool invert){
 
 }
 
-void RunShooter(units::second_t time){
+void Robot::RunIntake(bool invert){
+  //Also want Gavin to write
+}
+
+void Robot::RunIntake(){
+  m_intakeFrontMotor.Set(0.9);
+  m_intakeBackMotor.Set(0.9);
+}
+
+void Robot::StopIntake(){
+  m_intakeFrontMotor.Set(0);
+  m_intakeBackMotor.Set(0);
+}
+
+void Robot::RunShooter(units::second_t time){
   m_shooterMotorL.Set(ControlMode::PercentOutput, 0.5);
   m_shooterMotorR.Set(ControlMode::PercentOutput, 0.5);
+  Wait(time);
+  m_shooterMotorL.Set(0);
+  m_shooterMotorR.Set(0);
+}
+
+void Robot::RunShooter(units::second_t time, double percentOutput){
+  m_shooterMotorL.Set(ControlMode::PercentOutput, percentOutput);
+  m_shooterMotorR.Set(ControlMode::PercentOutput, percentOutput);
+  Wait(time);
+  m_shooterMotorL.Set(0);
+  m_shooterMotorR.Set(0);
+}
+
+void Robot::RunShooter(double percentOutput){
+  m_shooterMotorL.Set(ControlMode::PercentOutput, percentOutput);
+  m_shooterMotorR.Set(ControlMode::PercentOutput, percentOutput);
+}
+
+void Robot::StopShooter(){
+  m_shooterMotorL.Set(0);
+  m_shooterMotorR.Set(0);
 }
 
 void Robot::RobotInit() {

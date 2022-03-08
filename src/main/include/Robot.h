@@ -24,7 +24,7 @@ class Robot : public frc::TimedRobot {
   //void SimulationInit() override;
   //void SimulationPeriodic() override;
   void MoveClimber(double rotations);
-  void AutoShootAtTargetPRM(double RPM);
+  void AutoShootAtTargetPRM(double rpm);
   void DriveRobot(double distance);
   void DriveRobotForward(units::second_t time);
   void RotateRobot(units::degrees degrees);
@@ -36,7 +36,15 @@ class Robot : public frc::TimedRobot {
   void LowGear();
   void RunIntake(units::second_t time);
   void RunIntake(units::second_t time, bool invert);
+  void RunIntake();
+  void RunIntake(bool invert);
+  void StopIntake();
   void RunShooter(units::second_t time);
+  void RunShooter(units::second_t time, double percentOutput);
+  void RunShooter(double percentOutput);
+  void StopShooter();
+  void RunShooterAtRPM(units::second_t time, double rpm);
+  void RunShooterAtRPM(double rpm);
 
  private:
   frc::SendableChooser<std::string> m_chooser;
