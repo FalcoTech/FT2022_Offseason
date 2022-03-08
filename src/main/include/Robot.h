@@ -36,6 +36,7 @@ class Robot : public frc::TimedRobot {
   void LowGear();
   void RunIntake(units::second_t time);
   void RunIntake(units::second_t time, bool invert);
+  void RunShooter(units::second_t time);
 
  private:
   frc::SendableChooser<std::string> m_chooser;

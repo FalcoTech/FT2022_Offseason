@@ -69,8 +69,8 @@ rev::SparkMaxRelativeEncoder m_leftDriveEncoder = m_leftLeadMotor.GetEncoder();
 rev::SparkMaxRelativeEncoder m_rightDriveEncoder = m_rightLeadMotor.GetEncoder();
 
 frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
-string currentDriveMode = "tank";
-string altDriveMode = "curve";
+string currentDriveMode = "curve";
+string altDriveMode = "tank";
 frc2::PIDController driveControl{drivekP, drivekI, drivekD};
 frc::SlewRateLimiter<units::scalar> m_speedLimiter{3 / 1_s};
 
@@ -213,10 +213,14 @@ void Robot::RunIntake(units::second_t time, bool invert){
   //for running backwards want Gavin to write
 
 }
+
+void RunShooter(units::second_t time){
+  m_shooterMotorL.Set(ControlMode::PercentOutput, 0.5);
+  m_shooterMotorR.Set(ControlMode::PercentOutput, 0.5);
+}
+
 void Robot::RobotInit() {
 
-  //Clear Config Settings?
-  // m_leftLiftMotor.RestoreFactoryDefaults();
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
@@ -433,9 +437,10 @@ double leftLift = CoPilot->GetLeftY();
                                                           SHOOTER
   ******************************************************************************************************************************/
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 4096/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
-   double targetVelocity_Per100ms = 500 * 4096 / 600;
+  // double targetVelocity_Per100ms = 500 * 4096 / 600;
+  double targetVelocity_Per100ms = 2000;
   SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
-  SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms);
+  // SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 4096);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   SmartDashboard::PutNumber("Shooter Output", output);
  
@@ -500,7 +505,7 @@ double leftLift = CoPilot->GetLeftY();
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){
-    m_drive.CurvatureDrive(leftJoystick, rightJoystick, false);
+    m_drive.CurvatureDrive(leftJoystick, Pilot->GetRightX(), false);
   }
   if (Pilot->GetBackButtonPressed()){
     currentDriveMode.swap(altDriveMode);
