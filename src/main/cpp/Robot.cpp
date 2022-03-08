@@ -105,7 +105,7 @@ rev::CANSparkMax m_intakeFrontMotor{m_intakeFrontID, rev::CANSparkMax::MotorType
 rev::CANSparkMax m_intakeBackMotor{m_intakeBackID, rev::CANSparkMax::MotorType::kBrushless};
 rev::SparkMaxRelativeEncoder m_intakeFrontEncoder = m_intakeFrontMotor.GetEncoder();
 rev::SparkMaxRelativeEncoder m_intakeBackEncoder = m_intakeBackMotor.GetEncoder();
-DoubleSolenoid sol_Intake(1, frc::PneumaticsModuleType::REVPH, 2, 3);
+DoubleSolenoid sol_Intake(1, frc::PneumaticsModuleType::REVPH, 4, 5);
 
 //Lift and Climb
 static const int m_leftLiftID = 31, m_rightLiftID = 30;
@@ -113,7 +113,7 @@ rev::CANSparkMax m_leftLiftMotor{m_leftLiftID, rev::CANSparkMax::MotorType::kBru
 rev::CANSparkMax m_rightLiftMotor{m_rightLiftID, rev::CANSparkMax::MotorType::kBrushless};
 rev::SparkMaxRelativeEncoder m_leftLiftEncoder = m_leftLiftMotor.GetEncoder();
 rev::SparkMaxRelativeEncoder m_rightLiftEncoder = m_rightLiftMotor.GetEncoder();
-DoubleSolenoid sol_Climber(1, frc::PneumaticsModuleType::REVPH, 4, 5);
+DoubleSolenoid sol_Climber(1, frc::PneumaticsModuleType::REVPH, 2, 3);
 rev::SparkMaxPIDController m_leftLiftPIDController = m_leftLiftMotor.GetPIDController();
 rev::SparkMaxPIDController m_rightLiftPIDController = m_rightLiftMotor.GetPIDController();
 double kLiftP = 0.1, kLiftI = 1e-4, kLiftD = 1, kLiftIz = 0, kLiftFF = 0, kLiftMaxOutput = 0.2, kLiftMinOutput = -0.2;
@@ -185,21 +185,20 @@ void RotateRobot(units::degrees degrees){
 void ExtendClimber(){
   sol_Climber.Set(DoubleSolenoid::kForward);
 }
-//All Solenoid stuff might be backwards needs tested
 void RetractClimber(){
   sol_Climber.Set(DoubleSolenoid::kReverse);
 }
 void ExtendIntake(){
-  sol_Intake.Set(DoubleSolenoid::kForward);
+  sol_Intake.Set(DoubleSolenoid::kForward);  
 }
 void RetractIntake(){
   sol_Intake.Set(DoubleSolenoid::kReverse);
 }
 void HighGear(){
-  sol_Shift.Set(DoubleSolenoid::kForward);
+  sol_Shift.Set(DoubleSolenoid::kReverse);
 }
 void LowGear(){
-  sol_Shift.Set(DoubleSolenoid::kReverse);
+  sol_Shift.Set(DoubleSolenoid::kForward);
 }
 
 void RunIntake(units::second_t time){
@@ -326,6 +325,8 @@ void Robot::AutonomousInit() {
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     m_timer.Reset();
     m_timer.Start();
+  RunIntake(5_s);
+  RunIntake(0.5_s, true);
 }
 
 void Robot::AutonomousPeriodic() {
@@ -366,15 +367,15 @@ void Robot::TeleopPeriodic() {
                                                           LIFT   
   ******************************************************************************************************************************/
   // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
-  SmartDashboard::PutNumber("Climber Solenoid", sol_Climber.Get());
+
   SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
   SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
  
   if (CoPilot->GetPOV() == 90){
-    sol_Climber.Set(frc::DoubleSolenoid::Value::kForward);
+    ExtendClimber();
   }
   else if (CoPilot->GetPOV() == 270){
-    sol_Climber.Set(frc::DoubleSolenoid::Value::kReverse);
+    RetractClimber();
   }
 
 double leftLift = CoPilot->GetLeftY();
@@ -411,13 +412,12 @@ double leftLift = CoPilot->GetLeftY();
     m_intakeBackMotor.Set(0);
   }
 
-  if (CoPilot->GetLeftBumper()){
-    //sol_Intake.Set(frc::DoubleSolenoid::Value::kForward);
-    sol_Intake.Toggle();
+  if (CoPilot->GetLeftBumperPressed()){
+    RetractIntake();
   }
   
-  else if (CoPilot->GetRightBumper()){
-    sol_Intake.Set(frc::DoubleSolenoid::Value::kReverse);
+  else if (CoPilot->GetRightBumperPressed()){
+    ExtendIntake();
   }
 
   /******************************************************************************************************************************
@@ -506,11 +506,13 @@ double leftLift = CoPilot->GetLeftY();
 
 
   if (Pilot->GetRightBumper()){
-    sol_Shift.Set(frc::DoubleSolenoid::Value::kForward);
+    LowGear();
+    //Low Gear
   }
   
   else if (Pilot->GetLeftBumper()){
-    sol_Shift.Set(frc::DoubleSolenoid::Value::kReverse);
+    HighGear();
+    //High Gear
   }
 }
 
