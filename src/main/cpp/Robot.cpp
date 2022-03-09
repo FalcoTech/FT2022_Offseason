@@ -259,6 +259,7 @@ void Robot::StopShooter(){
 }
 
 void Robot::RobotInit() {
+  SetSaf
 
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
@@ -269,6 +270,7 @@ void Robot::RobotInit() {
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_rightLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_rightFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+  
 
   m_leftPID.SetP(drivekP);
   m_leftPID.SetI(drivekI);
@@ -374,30 +376,30 @@ void Robot::AutonomousPeriodic() {
  ExtendIntake();
  Wait(0.25_s);
 
- m_leftLeadMotor.Set(0.5);
- m_rightLeadMotor.Set(0.5);
+ m_drive.TankDrive(0.5,0.5);
  RunIntake();
- Wait(2_s);
+ 
+ Wait(3_s);
+
 
  StopIntake();
- m_leftLeadMotor.Set(0);
- m_rightLeadMotor.Set(0);
- 
- m_leftLeadMotor.Set(-0.5);
- m_rightLeadMotor.Set(-0.5);
- Wait(1_s)
+ m_drive.TankDrive(0,0);
+ Wait(4_s);
 
- m_leftLeadMotor.Set(0);
- m_rightLeadMotor.Set(0);
+m_drive.TankDrive(-0.5,-0.5);
+ Wait(1_s);
+
+m_drive.TankDrive(0,0);
  Wait(0.5_s);
  
  //Drive to shooting area
 
  RunIntake(true);
- Wait(0.5_s)
+ Wait(0.2_s);
+ StopIntake();
 
- RunShooter();
- Wait(1_s)
+ RunShooter(.7);
+ Wait(1_s);
  RunIntake();
  Wait(5_s);
 
@@ -493,9 +495,9 @@ double leftLift = CoPilot->GetLeftY();
   ******************************************************************************************************************************/
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
   // double targetVelocity_Per100ms = 2000 * 2048 / 600; //Gives weird numbers so we aren't using this anymore (Maybe fixed?)
-  double targetVelocity_Per100ms = 2000;
+  double targetVelocity_Per100ms = 5100;
   SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
-  SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 4096);
+  SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 2048);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   SmartDashboard::PutNumber("Shooter Output", output);
  
@@ -509,8 +511,8 @@ double leftLift = CoPilot->GetLeftY();
   else if (CoPilot->GetBButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
-    m_shooterMotorL.Set(ControlMode::PercentOutput, 0.5);
-    m_shooterMotorR.Set(ControlMode::PercentOutput, 0.5);
+    m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
+    m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
   // else if (CoPilot->GetXButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
@@ -545,7 +547,7 @@ double leftLift = CoPilot->GetLeftY();
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){
-    m_drive.CurvatureDrive(leftJoystick, Pilot->GetRightX(), false);
+    m_drive.CurvatureDrive(leftJoystick, -1* Pilot->GetRightX(), true);
   }
   if (Pilot->GetBackButtonPressed()){
     currentDriveMode.swap(altDriveMode);
