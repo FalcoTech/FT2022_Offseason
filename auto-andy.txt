@@ -1,0 +1,58 @@
+// Move Intake Down
+ sol_Intake.Set(frc::DoubleSolenoid::Value::kForward);
+
+if (m_timer.Get() < 2_s) {
+      // Drive backward half speed Start Intake and Collect Cargo
+      m_leftLeadMotor.Set(0.5);
+      m_rightLeadMotor.Set(0.5);
+      m_intakeFrontMotor.Set(0.75);
+      m_intakeBackMotor.Set(0.75);
+    } else {
+      // Stop robot & Intake
+      m_leftLeadMotor.Set(0);
+      m_rightLeadMotor.Set(0);
+      m_intakeFrontMotor.Set(0);
+      m_intakeBackMotor.Set(0);    }        
+
+if (m_timer.Get() < 2_s) {
+      // Drive backward half speed
+      m_leftLeadMotor.Set(-0.5);
+      m_rightLeadMotor.Set(-0.5);
+    } else {
+      // Stop robot
+      m_leftLeadMotor.Set(0);
+      m_rightLeadMotor.Set(0);
+    }        
+
+if (m_timer.Get() < 0.2_s) {
+      // Start Intake - Backup Cargo
+      m_intakeFrontMotor.Set(-0.10);
+      m_intakeBackMotor.Set(-0.10);
+    } else {
+      // Stop Intake
+      m_intakeFrontMotor.Set(0);
+      m_intakeBackMotor.Set(0);
+    }        
+
+if (m_timer.Get() < 5_s) {
+      // Start Shooter
+    m_shooterMotorL.Set(0.9);
+    m_shooterMotorR.Set(0.9);
+    if (m_timer.Get() < 1_s) {
+      // Start Intake
+        m_intakeFrontMotor.Set(0);
+        m_intakeBackMotor.Set(0);
+    } else if (m_timer.Get() < 2_s){
+      // Stop intake
+        m_intakeFrontMotor.Set(0.5);
+        m_intakeBackMotor.Set(0.5);}
+        else {
+        m_intakeFrontMotor.Set(0);
+        m_intakeBackMotor.Set(0);
+        }        
+    } else {
+      // Stop Shooter
+    m_shooterMotorL.Set(0);
+    m_shooterMotorR.Set(0);
+    }        
+
