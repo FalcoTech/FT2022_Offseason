@@ -210,12 +210,16 @@ void Robot::RunIntake(units::second_t time){
 }
 
 void Robot::RunIntake(units::second_t time, bool invert){
-  //for running backwards want Gavin to write
-
+  m_intakeFrontMotor.Set(-0.9);
+  m_intakeBackMotor.Set(-0.9);
+  Wait(time);
+  m_intakeFrontMotor.Set(0);
+  m_intakeBackMotor.Set(0);
 }
 
 void Robot::RunIntake(bool invert){
-  //Also want Gavin to write
+  m_intakeFrontMotor.Set(-0.9);
+  m_intakeBackMotor.Set(-0.9);
 }
 
 void Robot::RunIntake(){
