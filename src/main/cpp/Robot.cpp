@@ -370,21 +370,41 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
- 
-if (m_timer.Get() < 2_s) {
-      // Drive forwards half speed
-      m_leftLeadMotor.Set(0.5);
-        // m_leftFollowMotor.Set(0.5);
-        m_rightLeadMotor.Set(0.5);
-        // m_rightFollowMotor.Set(0.5);
-    } else {
-      // Stop robot
-       m_leftLeadMotor.Set(0);
-        // m_leftFollowMotor.Set(0);
-        m_rightLeadMotor.Set(0);
-        // m_rightFollowMotor.Set(0);
-    }        
+ LowGear();
+ ExtendIntake();
+ Wait(0.25_s);
 
+ m_leftLeadMotor.Set(0.5);
+ m_rightLeadMotor.Set(0.5);
+ RunIntake();
+ Wait(2_s);
+
+ StopIntake();
+ m_leftLeadMotor.Set(0);
+ m_rightLeadMotor.Set(0);
+ 
+ m_leftLeadMotor.Set(-0.5);
+ m_rightLeadMotor.Set(-0.5);
+ Wait(1_s)
+
+ m_leftLeadMotor.Set(0);
+ m_rightLeadMotor.Set(0);
+ Wait(0.5_s);
+ 
+ //Drive to shooting area
+
+ RunIntake(true);
+ Wait(0.5_s)
+
+ RunShooter();
+ Wait(1_s)
+ RunIntake();
+ Wait(5_s);
+
+ StopIntake();
+ StopShooter();
+
+ //Switch to high gear if wanted here
 }
 
 void Robot::TeleopInit() {
