@@ -259,12 +259,11 @@ void Robot::StopShooter(){
 }
 
 void Robot::RobotInit() {
-  SetSaf
-
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
   m_rightLeadMotor.SetInverted(true);
+  RetractIntake();
 
   m_leftLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
@@ -369,24 +368,25 @@ void Robot::AutonomousInit() {
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     m_timer.Reset();
     m_timer.Start();
+  m_drive.SetSafetyEnabled(false);
 }
 
 void Robot::AutonomousPeriodic() {
  LowGear();
  ExtendIntake();
- Wait(0.25_s);
+ Wait(0.5_s);
 
- m_drive.TankDrive(0.5,0.5);
+ m_drive.TankDrive(-0.5,-0.5);
  RunIntake();
  
- Wait(3_s);
+ Wait(2_s);
 
 
  StopIntake();
  m_drive.TankDrive(0,0);
- Wait(4_s);
+ Wait(0.5_s);
 
-m_drive.TankDrive(-0.5,-0.5);
+m_drive.TankDrive(0.5,0.5);
  Wait(1_s);
 
 m_drive.TankDrive(0,0);
@@ -405,12 +405,14 @@ m_drive.TankDrive(0,0);
 
  StopIntake();
  StopShooter();
-
+ 
+ Wait(m_timer.GetMatchTime());
  //Switch to high gear if wanted here
 }
 
 void Robot::TeleopInit() {
   //_orchestra.LoadMusic(song);
+  m_drive.SetSafetyEnabled(true);
 }
 
 void Robot::TeleopPeriodic() {
