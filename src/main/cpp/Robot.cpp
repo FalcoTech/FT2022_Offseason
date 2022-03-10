@@ -379,7 +379,7 @@ void Robot::AutonomousPeriodic() {
  m_drive.TankDrive(-0.5,-0.5);
  RunIntake();
  
- Wait(4_s);
+ Wait(3.25_s);
 
 
  StopIntake();
@@ -539,20 +539,26 @@ double leftLift = CoPilot->GetLeftY();
                                       ########  ##     ##  ####    ###    ######## 
                                                         DRIVE
   ******************************************************************************************************************************/
+  double turningRate;
   double rightJoystick = Pilot->GetRightY();
   double leftJoystick = Pilot->GetLeftY();
   SmartDashboard::PutNumber("Left Drive Velocity", -1 * m_leftDriveEncoder.GetVelocity());
   SmartDashboard::PutNumber("Right Drive Velocity", -1 * m_rightDriveEncoder.GetVelocity());
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
+  turningRate = -1*(Pilot->GetLeftTriggerAxis()) + Pilot->GetRightTriggerAxis();
 
   if (currentDriveMode == "tank"){
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
-  else if (currentDriveMode == "curve"){
-    m_drive.CurvatureDrive(leftJoystick, -1* Pilot->GetRightX(), true);
+  else if (currentDriveMode == "curve"){ 
+    m_drive.CurvatureDrive(leftJoystick, turningRate, true);
   }
-  if (Pilot->GetBackButtonPressed()){
+  if (Pilot->GetXButtonPressed()){
     currentDriveMode.swap(altDriveMode);
+  }
+
+  if (Pilot->GetYButtonPressed()){
+    leftJoystick = -1*leftJoystick;
   }
   //TODO for Gavin: Add a button to switch forwards and backwards
 
