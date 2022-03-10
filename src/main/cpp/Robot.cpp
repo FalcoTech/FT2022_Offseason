@@ -379,7 +379,7 @@ void Robot::AutonomousPeriodic() {
  m_drive.TankDrive(-0.5,-0.5);
  RunIntake();
  
- Wait(4_s);
+ Wait(3_s);
 
 
  StopIntake();
