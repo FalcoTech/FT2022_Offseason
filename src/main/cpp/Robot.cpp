@@ -379,7 +379,7 @@ void Robot::AutonomousPeriodic() {
  m_drive.TankDrive(-0.5,-0.5);
  RunIntake();
  
- Wait(2_s);
+ Wait(4_s);
 
 
  StopIntake();
@@ -444,8 +444,8 @@ void Robot::TeleopPeriodic() {
 
 double leftLift = CoPilot->GetLeftY();
 
-    m_leftLiftMotor.Set(leftLift);
-    m_rightLiftMotor.Set(leftLift);
+    m_leftLiftMotor.Set(-1*leftLift);
+    m_rightLiftMotor.Set(-1*leftLift);
 
   
   /******************************************************************************************************************************
