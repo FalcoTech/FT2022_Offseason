@@ -556,7 +556,7 @@ double leftLift = CoPilot->GetLeftY();
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){ 
-    m_drive.CurvatureDrive(leftJoystick, (turningRate*.1)+Pilot->GetRightX(), true);
+    m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
   }
   if (Pilot->GetXButtonPressed()){
     currentDriveMode.swap(altDriveMode);
