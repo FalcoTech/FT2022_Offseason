@@ -263,7 +263,7 @@ void Robot::OnlyDriveAuto(){
 }
 
 void Robot::DefaultAuto(){
-  LowGear();
+LowGear();
  ExtendIntake();
  Wait(.3_s);
 
@@ -271,7 +271,7 @@ void Robot::DefaultAuto(){
  Wait(0.2_s);
  StopIntake();
 
- RunShooter(.6);
+ RunShooter(.55);
  Wait(1_s);
  RunIntake();
  Wait(3.5_s);
@@ -303,7 +303,6 @@ m_drive.TankDrive(0,0);
  StopShooter();
  
  Wait(m_timer.GetMatchTime());
- //Switch to high gear if wanted here
 }
 
 
