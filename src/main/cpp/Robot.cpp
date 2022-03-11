@@ -259,14 +259,7 @@ void Robot::OnlyDriveAuto(){
   m_drive.TankDrive(-0.5,-0.5); //drives forwards
   Wait(3_s);
   m_drive.TankDrive(0,0);
-  Wait(m_timer.GetMatchTime());
-}
-
-void Robot::DefaultAuto(){
-LowGear();
- ExtendIntake();
- Wait(.3_s);
-
+  
  RunIntake(true);
  Wait(0.2_s);
  StopIntake();
@@ -276,9 +269,26 @@ LowGear();
  RunIntake();
  Wait(3.5_s);
  StopShooter();
+  
+Wait(m_timer.GetMatchTime());
+}
+
+void Robot::DefaultAuto(){
+ LowGear();
+ ExtendIntake();
+ Wait(.3_s);
+
+ RunIntake(true);
+ Wait(0.2_s);
+ StopIntake();
+
+ RunShooter(.575);
+ Wait(1_s);
+ RunIntake();
+ Wait(3.5_s);
 
  m_drive.TankDrive(-0.5,-0.5); //drives forwards
- Wait(3_s);
+ Wait(2.75_s);
 
  m_drive.TankDrive(0,0);
  Wait(0.5_s);
@@ -297,8 +307,6 @@ m_drive.TankDrive(0,0);
  Wait(1_s);
  RunIntake();
  Wait(3.5_s);
- StopIntake();
-
  StopIntake();
  StopShooter();
  
@@ -428,43 +436,6 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-<<<<<<< test
- LowGear();
- ExtendIntake();
- Wait(.3_s);
-
- RunIntake(true);
- Wait(0.2_s);
- StopIntake();
-
- RunShooter(.55);
- Wait(1_s);
- RunIntake();
- Wait(3.5_s);
- StopShooter();
-
- m_drive.TankDrive(-0.5,-0.5); //drives forwards
- Wait(3_s);
-
- m_drive.TankDrive(0,0);
- Wait(0.5_s);
-
-m_drive.TankDrive(0.5,0.5);
- Wait(1_s);
-
-m_drive.TankDrive(0,0);
- Wait(0.5_s);
- 
- RunIntake(true);
- Wait(0.2_s);
- StopIntake();
-
- RunShooter(.7);
- Wait(1_s);
- RunIntake();
- Wait(3.5_s);
- StopIntake();
-=======
   string selected_auto = m_chooser.GetSelected();
   if (selected_auto == "standard"){
     DefaultAuto();
@@ -472,7 +443,6 @@ m_drive.TankDrive(0,0);
   else if (selected_auto == "drive"){
     OnlyDriveAuto();
   }
->>>>>>> Create first Auto Chooser Test
 
 }
 
