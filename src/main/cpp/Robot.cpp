@@ -306,7 +306,7 @@ m_drive.TankDrive(0,0);
  Wait(0.2_s);
  StopIntake();
 
- RunShooter(.7);
+ RunShooter(.8);
  Wait(1_s);
  RunIntake();
  Wait(3.5_s);
