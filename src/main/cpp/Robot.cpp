@@ -269,8 +269,11 @@ void Robot::OnlyDriveAuto(){
  RunIntake();
  Wait(3.5_s);
  StopShooter();
-  
-Wait(m_timer.GetMatchTime());
+
+while(m_timer.Get() < 15_s){
+  Wait(0.01_s);
+}
+
 }
 
 void Robot::DefaultAuto(){
@@ -310,7 +313,12 @@ m_drive.TankDrive(0,0);
  StopIntake();
  StopShooter();
  
- Wait(m_timer.GetMatchTime());
+//  Wait(m_timer.GetMatchTime());
+
+while(m_timer.Get() < 15_s){
+  Wait(0.01_s);
+  }
+
 }
 
 
@@ -440,7 +448,7 @@ void Robot::AutonomousPeriodic() {
   if (selected_auto == "standard"){
     DefaultAuto();
   }
-  else if (selected_auto == "drive"){
+  if (selected_auto == "drive"){
     OnlyDriveAuto();
   }
 
