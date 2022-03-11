@@ -264,7 +264,7 @@ void Robot::OnlyDriveAuto(){
  Wait(0.2_s);
  StopIntake();
 
- RunShooter(.55);
+ RunShooter(.6);
  Wait(1_s);
  RunIntake();
  Wait(3.5_s);
@@ -285,31 +285,26 @@ void Robot::DefaultAuto(){
  Wait(0.2_s);
  StopIntake();
 
- RunShooter(.575);
+ RunShooter(.6);
  Wait(1_s);
  RunIntake();
  Wait(3.5_s);
+ RunShooter(.8);
 
  m_drive.TankDrive(-0.5,-0.5); //drives forwards
- Wait(2.75_s);
+ Wait(2_s);
+ StopIntake();
+ Wait(0.75_s);
 
  m_drive.TankDrive(0,0);
  Wait(0.5_s);
 
-m_drive.TankDrive(0.5,0.5);
- Wait(1_s);
+// m_drive.TankDrive(0.5,0.5);
+//  Wait(1_s);
 
-m_drive.TankDrive(0,0);
- Wait(0.5_s);
- 
- RunIntake(true);
- Wait(0.2_s);
- StopIntake();
+// m_drive.TankDrive(0,0);
+//  Wait(0.5_s);
 
- RunShooter(.8);
- Wait(1_s);
- RunIntake();
- Wait(3.5_s);
  StopIntake();
  StopShooter();
  
