@@ -45,6 +45,8 @@ class Robot : public frc::TimedRobot {
   void StopShooter();
   void RunShooterAtRPM(units::second_t time, double rpm);
   void RunShooterAtRPM(double rpm);
+  void DefaultAuto();
+  void OnlyDriveAuto();
 
  private:
   frc::SendableChooser<std::string> m_chooser;
