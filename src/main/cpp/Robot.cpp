@@ -263,8 +263,7 @@ void Robot::RobotInit() {
   // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
   m_rightLeadMotor.SetInverted(true);
-  RetractIntake();
-
+  
   m_leftLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_leftFollowMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
   m_rightLeadMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
@@ -341,6 +340,7 @@ void Robot::RobotInit() {
   m_shooterMotorR.ConfigPeakOutputForward(1, 10);
   m_shooterMotorR.ConfigPeakOutputReverse(0, 10);
 
+  CameraServer::StartAutomaticCapture();
 }
 
 void Robot::RobotPeriodic() {
@@ -374,15 +374,21 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {
  LowGear();
  ExtendIntake();
- Wait(0.5_s);
+ Wait(.3_s);
 
- m_drive.TankDrive(-0.5,-0.5);
+ RunIntake(true);
+ Wait(0.2_s);
+ StopIntake();
+
+ RunShooter(.6);
+ Wait(1_s);
  RunIntake();
- 
+ Wait(3.5_s);
+ StopShooter();
+
+ m_drive.TankDrive(-0.5,-0.5); //drives forwards
  Wait(3_s);
 
-
- StopIntake();
  m_drive.TankDrive(0,0);
  Wait(0.5_s);
 
@@ -392,8 +398,6 @@ m_drive.TankDrive(0.5,0.5);
 m_drive.TankDrive(0,0);
  Wait(0.5_s);
  
- //Drive to shooting area
-
  RunIntake(true);
  Wait(0.2_s);
  StopIntake();
@@ -401,7 +405,8 @@ m_drive.TankDrive(0,0);
  RunShooter(.7);
  Wait(1_s);
  RunIntake();
- Wait(5_s);
+ Wait(3.5_s);
+ StopIntake();
 
  StopIntake();
  StopShooter();
@@ -539,23 +544,27 @@ double leftLift = CoPilot->GetLeftY();
                                       ########  ##     ##  ####    ###    ######## 
                                                         DRIVE
   ******************************************************************************************************************************/
+  double turningRate;
   double rightJoystick = Pilot->GetRightY();
   double leftJoystick = Pilot->GetLeftY();
   SmartDashboard::PutNumber("Left Drive Velocity", -1 * m_leftDriveEncoder.GetVelocity());
   SmartDashboard::PutNumber("Right Drive Velocity", -1 * m_rightDriveEncoder.GetVelocity());
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
+  turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
   if (currentDriveMode == "tank"){
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
-  else if (currentDriveMode == "curve"){
-    m_drive.CurvatureDrive(leftJoystick, -1* Pilot->GetRightX(), true);
+  else if (currentDriveMode == "curve"){ 
+    m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
   }
-  if (Pilot->GetBackButtonPressed()){
+  if (Pilot->GetXButtonPressed()){
     currentDriveMode.swap(altDriveMode);
   }
-  //TODO for Gavin: Add a button to switch forwards and backwards
 
+  if (Pilot->GetYButtonPressed()){
+    // leftJoystick = -1*leftJoystick;
+  }
 
   if (Pilot->GetRightBumper()){
     LowGear();
