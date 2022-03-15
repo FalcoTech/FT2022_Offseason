@@ -256,23 +256,29 @@ void Robot::RunShooter(double percentOutput){
 void Robot::OnlyDriveAuto(){
   LowGear();
   ExtendIntake();
-  m_drive.TankDrive(-0.5,-0.5); //drives forwards
-  Wait(3_s);
-  m_drive.TankDrive(0,0);
-  
+ 
  RunIntake(true);
- Wait(0.2_s);
- StopIntake();
+ Wait(0.2_s); // .5s
+ StopIntake(); 
 
  RunShooter(.6);
- Wait(1_s);
+ Wait(1_s); //1.5s
  RunIntake();
- Wait(3.5_s);
+ Wait(3.5_s); //5s
  StopShooter();
 
-while(m_timer.Get() < 15_s){
-  Wait(0.01_s);
-}
+ m_drive.TankDrive(-0.5,-0.5); //drives forwards
+ Wait(3_s);
+ m_drive.TankDrive(0,0);
+  
+StopIntake();
+StopShooter();
+
+Wait(3_s);
+
+// while(m_timer.Get() < 15_s){
+  // Wait(0.01_s);
+// }
 
 }
 
@@ -289,22 +295,21 @@ void Robot::DefaultAuto(){
  Wait(1_s); //1.5s
  RunIntake();
  Wait(3.5_s); //5s
- RunShooter(.8);
+ RunShooter(.65);
 
  m_drive.TankDrive(-0.5,-0.5); //drives forwards + intake
  Wait(2.75_s); //7s
  m_drive.TankDrive(0.5, 0.5);
- Wait(0.25s);
+ Wait(0.7s);
 
  m_drive.TankDrive(0,0);
  StopIntake();
  StopShooter();
- 
-//  Wait(m_timer.GetMatchTime());
 
-while(m_timer.Get() < 10_s){
-  Wait(0.01_s);
-  }
+ Wait(7_s);
+// while(m_timer.Get() < 10_s){
+  // Wait(0.01_s);
+  // }
 
 }
 
@@ -432,12 +437,12 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
   string selected_auto = m_chooser.GetSelected();
-  if (selected_auto == "standard"){
+  // if (selected_auto == "standard"){
     DefaultAuto();
-  }
-  else if (selected_auto == "drive"){
-    OnlyDriveAuto();
-  }
+  // }
+  // else if (selected_auto == "drive"){
+  //  OnlyDriveAuto();
+//  }
 
 }
 
