@@ -8,6 +8,7 @@
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include "frc/AddressableLED.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -47,6 +48,14 @@ class Robot : public frc::TimedRobot {
   void RunShooterAtRPM(double rpm);
   void DefaultAuto();
   void OnlyDriveAuto();
+  
+  //LEDS:
+std::shared_ptr<frc::AddressableLED> leds;
+static const int numLeds = 176;
+std::array<frc::AddressableLED::LEDData, numLeds> ledBuffer;
+
+void setLeds(frc::Color);
+
 
  private:
   frc::SendableChooser<std::string> m_chooser;

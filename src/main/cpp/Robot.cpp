@@ -42,6 +42,9 @@
 #include <thread>
 #include <math.h>
 
+#include "frc/AddressableLED.h"
+
+
 using namespace std;
 using namespace frc;
 using namespace frc2;
@@ -184,7 +187,7 @@ void Robot::RotateRobot(units::degrees degrees){
 }
 void Robot::ExtendClimber(){
   sol_Climber.Set(DoubleSolenoid::kForward);
-}
+} 
 void Robot::RetractClimber(){
   sol_Climber.Set(DoubleSolenoid::kReverse);
 }
@@ -319,7 +322,9 @@ void Robot::StopShooter(){
   m_shooterMotorR.Set(0);
 }
 
+
 void Robot::RobotInit() {
+
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
@@ -405,9 +410,33 @@ void Robot::RobotInit() {
   m_chooser.SetDefaultOption("Standard Auto", "standard");
   m_chooser.AddOption("Only Drive","drive");
   SmartDashboard::PutData(&m_chooser);
+
+
+    leds.reset(new frc::AddressableLED(9));
+    leds->SetLength(numLeds);
+    //std::fill_n(ledBuffer, numLeds, frc::Color::kAqua);
+    //for (int i = 0; i < numLeds; i++){
+    //    ledBuffer[i].SetRGB(frc::Color::kAqua.red * 255, frc::Color::kAqua.green * 255, frc::Color::kAqua.blue * 255);
+    //}
+    //leds->SetData(ledBuffer);
+    setLeds(frc::Color::kRed);
+    leds->Start();
 }
+void Robot::setLeds(frc::Color color){
+    int r = color.red * 255;
+    int g = color.green * 255;
+    int b = color.blue * 255;
+
+    for (int i = 0; i < numLeds; i++){
+        ledBuffer[i].SetRGB(r, g, b);
+    }
+
+    leds->SetData(ledBuffer);
+  }
+
 
 void Robot::RobotPeriodic() {
+
   //position = odometry->Update(getGyroAngle(), units::meter_t(getLeftEncoderDist()), units::meter_t(getRightEncoderDist()));
   //autoAimPID.SetSetpoint(0);
 }
