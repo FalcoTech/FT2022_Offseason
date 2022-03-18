@@ -320,6 +320,21 @@ void Robot::StopShooter(){
   m_shooterMotorR.Set(0);
 }
 
+void Robot::Rainbow() {
+    // For every pixel
+    for (int i = 0; i < kLength; i++) {
+      // Calculate the hue - hue is easier for rainbows because the color
+      // shape is a circle so only one value needs to precess
+      const auto pixelHue = (firstPixelHue + (i * 180 / kLength)) % 180;
+      // Set the value
+      m_ledBuffer[i].SetHSV(pixelHue, 255, 128);
+    }
+    // Increase by to make the rainbow "move"
+    firstPixelHue += 3;
+    // Check bounds
+    firstPixelHue %= 180;
+  }
+
 
 void Robot::RobotInit() {
 
@@ -537,6 +552,10 @@ double leftLift = CoPilot->GetLeftY();
   
   else if (CoPilot->GetRightBumperPressed()){
     ExtendIntake();
+  }
+
+  if (CoPilot->GetStartButtonPressed()){
+    Rainbow();
   }
 
   /******************************************************************************************************************************
