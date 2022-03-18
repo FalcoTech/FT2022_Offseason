@@ -12,6 +12,17 @@
 
 class Robot : public frc::TimedRobot {
  public:
+
+ static constexpr int kLength = 180;
+
+  // PWM port 9
+  // Must be a PWM header, not MXP or DIO
+  frc::AddressableLED m_led{9};
+  std::array<frc::AddressableLED::LEDData, kLength>
+      m_ledBuffer;  // Reuse the buffer
+  // Store what the last hue of the first pixel is
+  int firstPixelHue = 0;
+
   void RobotInit() override;
   void RobotPeriodic() override;
   void AutonomousInit() override;
@@ -50,12 +61,6 @@ class Robot : public frc::TimedRobot {
   void OnlyDriveAuto();
   
   //LEDS:
-std::shared_ptr<frc::AddressableLED> leds;
-static const int numLeds = 176;
-std::array<frc::AddressableLED::LEDData, numLeds> ledBuffer;
-
-void setLeds(frc::Color);
-
 
  private:
   frc::SendableChooser<std::string> m_chooser;

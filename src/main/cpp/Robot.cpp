@@ -42,8 +42,6 @@
 #include <thread>
 #include <math.h>
 
-#include "frc/AddressableLED.h"
-
 
 using namespace std;
 using namespace frc;
@@ -325,6 +323,18 @@ void Robot::StopShooter(){
 
 void Robot::RobotInit() {
 
+ // Default to a length of 60, start empty output
+    // Length is expensive to set, so only set it once, then just update data
+    m_led.SetLength(kLength);
+    m_led.SetData(m_ledBuffer);
+    m_led.Start();
+  for (int i = 0; i < kLength; i++) {
+   m_ledBuffer[i].SetRGB(255,0,0);
+  }
+  m_led.SetData(m_ledBuffer);
+
+
+
   m_leftFollowMotor.Follow(m_leftLeadMotor, false);
   // m_leftLeadMotor.SetInverted(true);
   m_rightFollowMotor.Follow(m_rightLeadMotor, false);
@@ -412,31 +422,10 @@ void Robot::RobotInit() {
   SmartDashboard::PutData(&m_chooser);
 
 
-    leds.reset(new frc::AddressableLED(9));
-    leds->SetLength(numLeds);
-    //std::fill_n(ledBuffer, numLeds, frc::Color::kAqua);
-    //for (int i = 0; i < numLeds; i++){
-    //    ledBuffer[i].SetRGB(frc::Color::kAqua.red * 255, frc::Color::kAqua.green * 255, frc::Color::kAqua.blue * 255);
-    //}
-    //leds->SetData(ledBuffer);
-    setLeds(frc::Color::kRed);
-    leds->Start();
 }
-void Robot::setLeds(frc::Color color){
-    int r = color.red * 255;
-    int g = color.green * 255;
-    int b = color.blue * 255;
-
-    for (int i = 0; i < numLeds; i++){
-        ledBuffer[i].SetRGB(r, g, b);
-    }
-
-    leds->SetData(ledBuffer);
-  }
 
 
 void Robot::RobotPeriodic() {
-
   //position = odometry->Update(getGyroAngle(), units::meter_t(getLeftEncoderDist()), units::meter_t(getRightEncoderDist()));
   //autoAimPID.SetSetpoint(0);
 }
@@ -572,12 +561,20 @@ double leftLift = CoPilot->GetLeftY();
   if (CoPilot->GetAButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
+    for (int i = 0; i < kLength; i++) {
+   m_ledBuffer[i].SetRGB(0,255,0);}
+  m_led.SetData(m_ledBuffer);
+
     m_shooterMotorL.Set(ControlMode::Velocity, targetVelocity_Per100ms);
     m_shooterMotorR.Set(ControlMode::Velocity, targetVelocity_Per100ms);
   }
   else if (CoPilot->GetBButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
+    for (int i = 0; i < kLength; i++) {
+   m_ledBuffer[i].SetRGB(0,0,255);}
+  m_led.SetData(m_ledBuffer);
+ 
     m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
     m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
@@ -589,7 +586,9 @@ double leftLift = CoPilot->GetLeftY();
   else {
     m_shooterMotorL.Set(0);
     m_shooterMotorR.Set(0);
-
+for (int i = 0; i < kLength; i++) {
+   m_ledBuffer[i].SetRGB(255,0,0);}
+  m_led.SetData(m_ledBuffer);
   }
   // m_shooterMotorL.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output);
   // m_shooterMotorR.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, output); 
