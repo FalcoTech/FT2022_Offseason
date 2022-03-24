@@ -328,7 +328,7 @@ void Robot::Rainbow() {
       const auto pixelHue = (firstPixelHue + (i * 180 / kLength)) % 180;
       // Set the value
       m_ledBuffer[i].SetHSV(pixelHue, 255, 128);
-    }
+    } 
     // Increase by to make the rainbow "move"
     firstPixelHue += 3;
     // Check bounds
@@ -381,7 +381,7 @@ void Robot::RobotInit() {
   m_intakeBackMotor.SetInverted(false);
   m_intakeFrontMotor.SetInverted(true);
   
-  m_rightLiftMotor.Follow(m_leftLiftMotor);
+  // m_rightLiftMotor.Follow(m_leftLiftMotor);
   m_leftLiftMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_rightLiftMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
   m_leftLiftMotor.SetInverted(true);
@@ -511,12 +511,17 @@ void Robot::TeleopPeriodic() {
     RetractClimber();
   }
 
+// double leftLift = CoPilot->GetLeftY();
+
+//     m_leftLiftMotor.Set(1*leftLift);
+//     m_rightLiftMotor.Set(1*leftLift);
+
 double leftLift = CoPilot->GetLeftY();
+double rightLift = CoPilot->GetRightY();
 
-    m_leftLiftMotor.Set(1*leftLift);
-    m_rightLiftMotor.Set(1*leftLift);
+m_leftLiftMotor.Set(rightLift);
+m_rightLiftMotor.Set(-1*leftLift);
 
-  
   /******************************************************************************************************************************
                                       #### ##    ## ########    ###    ##    ## ######## 
                                        ##  ###   ##    ##      ## ##   ##   ##  ##       
@@ -546,11 +551,11 @@ double leftLift = CoPilot->GetLeftY();
     m_intakeFrontMotor.Set(0.75);
   }
 
-  if (CoPilot->GetLeftBumperPressed()){
+  if (Pilot->GetLeftStickButtonPressed()){
     RetractIntake();
   }
   
-  else if (CoPilot->GetRightBumperPressed()){
+  else if (Pilot->GetRightStickButtonPressed()){
     ExtendIntake();
   }
 
