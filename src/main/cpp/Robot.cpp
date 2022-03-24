@@ -516,6 +516,10 @@ double leftLift = CoPilot->GetLeftY();
     m_leftLiftMotor.Set(1*leftLift);
     m_rightLiftMotor.Set(1*leftLift);
 
+  if (CoPilot->GetStartButton()){
+    Rainbow();
+  }
+
   
   /******************************************************************************************************************************
                                       #### ##    ## ########    ###    ##    ## ######## 
@@ -552,10 +556,6 @@ double leftLift = CoPilot->GetLeftY();
   
   else if (CoPilot->GetRightBumperPressed()){
     ExtendIntake();
-  }
-
-  if (CoPilot->GetStartButtonPressed()){
-    Rainbow();
   }
 
   /******************************************************************************************************************************
