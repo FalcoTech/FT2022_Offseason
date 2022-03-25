@@ -541,6 +541,29 @@ double rightLift = CoPilot->GetRightY();
 m_leftLiftMotor.Set(rightLift);
 m_rightLiftMotor.Set(-1*leftLift);
 
+
+
+
+
+
+  if (CoPilot->GetStartButtonPressed()){
+    // Partymodeyeahwoo();
+    for (int i = 0; i < 15; i++) {
+      for (int i = 0; i < kLength; i++) {
+        m_ledBuffer[i].SetRGB(255,0,0);}
+        m_led.SetData(m_ledBuffer);
+        Wait(.75_s);
+      for (int i = 0; i < kLength; i++) {
+        m_ledBuffer[i].SetRGB(0,255,0);}
+        m_led.SetData(m_ledBuffer);
+        Wait(.75_s);
+      for (int i = 0; i < kLength; i++) {
+        m_ledBuffer[i].SetRGB(0,0,255);}
+        m_led.SetData(m_ledBuffer);
+        Wait(.75_s);
+    }
+  }
+
   /******************************************************************************************************************************
                                       #### ##    ## ########    ###    ##    ## ######## 
                                        ##  ###   ##    ##      ## ##   ##   ##  ##       
@@ -586,24 +609,6 @@ m_rightLiftMotor.Set(-1*leftLift);
 
   else if (CoPilot->GetRightBumperPressed()){
     ExtendIntake();
-  }
-  
-  if (CoPilot->GetStartButtonPressed()){
-    // Partymodeyeahwoo();
-    for (int i = 0; i < 20; i++) {
-      for (int i = 0; i < kLength; i++) {
-        m_ledBuffer[i].SetRGB(255,0,0);}
-        m_led.SetData(m_ledBuffer);
-        Wait(.75_s);
-      for (int i = 0; i < kLength; i++) {
-        m_ledBuffer[i].SetRGB(0,255,0);}
-        m_led.SetData(m_ledBuffer);
-        Wait(.75_s);
-      for (int i = 0; i < kLength; i++) {
-        m_ledBuffer[i].SetRGB(0,0,255);}
-        m_led.SetData(m_ledBuffer);
-        Wait(.75_s);
-    }
   }
 
   /******************************************************************************************************************************
