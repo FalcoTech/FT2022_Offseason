@@ -505,10 +505,10 @@ void Robot::TeleopPeriodic() {
   SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
  
   if (CoPilot->GetPOV() == 90){
-    ExtendClimber();
+    RetractClimber();
   }
   else if (CoPilot->GetPOV() == 270){
-    RetractClimber();
+    ExtendClimber();
   }
 
 // double leftLift = CoPilot->GetLeftY();
@@ -558,10 +558,20 @@ m_rightLiftMotor.Set(-1*leftLift);
   else if (Pilot->GetRightStickButtonPressed()){
     ExtendIntake();
   }
-
-  if (CoPilot->GetStartButtonPressed()){
-    Rainbow();
+//
+//
+//
+  if (CoPilot->GetLeftBumperPressed()){
+    RetractIntake();
   }
+
+  else if (CoPilot->GetRightBumperPressed()){
+    ExtendIntake();
+  }
+  
+  // if (CoPilot->GetStartButtonPressed()){
+  //   Rainbow();
+  // }
 
   /******************************************************************************************************************************
                                ######  ##     ##  #######   #######  ######## ######## ########  
@@ -582,7 +592,7 @@ m_rightLiftMotor.Set(-1*leftLift);
   SmartDashboard::PutNumber("Shooter Output", output);
  
 
-  if (CoPilot->GetAButton()){
+  if (CoPilot->GetBButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Far RPM", 5742 * shooterGearRatio * 0.8); 
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
     for (int i = 0; i < kLength; i++) {
@@ -592,7 +602,7 @@ m_rightLiftMotor.Set(-1*leftLift);
     m_shooterMotorL.Set(ControlMode::Velocity, targetVelocity_Per100ms);
     m_shooterMotorR.Set(ControlMode::Velocity, targetVelocity_Per100ms);
   }
-  else if (CoPilot->GetBButton()){
+  else if (CoPilot->GetAButton()){
     // shooterTargetRPM = SmartDashboard::GetNumber("shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
     // m_shooterPID.SetSetpoint(shooterTargetRPM);
     for (int i = 0; i < kLength; i++) {
