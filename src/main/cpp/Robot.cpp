@@ -552,15 +552,15 @@ m_rightLiftMotor.Set(-1*leftLift);
       for (int i = 0; i < kLength; i++) {
         m_ledBuffer[i].SetRGB(255,0,0);}
         m_led.SetData(m_ledBuffer);
-        Wait(.75_s);
+        Wait(.3_s);
       for (int i = 0; i < kLength; i++) {
         m_ledBuffer[i].SetRGB(0,255,0);}
         m_led.SetData(m_ledBuffer);
-        Wait(.75_s);
+        Wait(.3_s);
       for (int i = 0; i < kLength; i++) {
         m_ledBuffer[i].SetRGB(0,0,255);}
         m_led.SetData(m_ledBuffer);
-        Wait(.75_s);
+        Wait(.3_s);
     }
   }
 
