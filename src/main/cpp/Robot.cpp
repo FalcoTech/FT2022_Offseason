@@ -335,6 +335,25 @@ void Robot::Rainbow() {
     firstPixelHue %= 180;
   }
 
+// void Robot::Partymodeyeahwoo() {
+//     while (1 == 1) {
+//       for (int i = 0; i < kLength; i++) {
+//         m_ledBuffer[i].SetRGB(255,0,0);}
+//         m_led.SetData(m_ledBuffer);
+//         Wait(.75_s);
+//       for (int i = 0; i < kLength; i++) {
+//         m_ledBuffer[i].SetRGB(0,255,0);}
+//         m_led.SetData(m_ledBuffer);
+//         Wait(.75_s);
+//       for (int i = 0; i < kLength; i++) {
+//         m_ledBuffer[i].SetRGB(0,0,255);}
+//         m_led.SetData(m_ledBuffer);
+//         Wait(.75_s);      
+//     } 
+// }
+
+
+
 
 void Robot::RobotInit() {
 
@@ -569,9 +588,11 @@ m_rightLiftMotor.Set(-1*leftLift);
     ExtendIntake();
   }
   
-  // if (CoPilot->GetStartButtonPressed()){
-  //   Rainbow();
-  // }
+  if (CoPilot->GetStartButtonPressed()){
+    // Partymodeyeahwoo();
+    
+    
+  }
 
   /******************************************************************************************************************************
                                ######  ##     ##  #######   #######  ######## ######## ########  

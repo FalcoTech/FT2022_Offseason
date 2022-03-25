@@ -64,7 +64,7 @@ class Robot : public frc::TimedRobot {
   // Store what the last hue of the first pixel is
   int firstPixelHue = 0;
    void Rainbow();
-
+   void Partymodeyeahwoo();
  private:
   frc::SendableChooser<std::string> m_chooser;
   const std::string kAutoNameDefault = "Default";
