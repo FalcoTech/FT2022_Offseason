@@ -313,6 +313,50 @@ void Robot::DefaultAuto(){
   // }
 
 }
+void Robot::CSAAuto(){
+  if (m_timer.Get() < .3_s) {
+    LowGear();
+    ExtendIntake();
+    //  Wait(.3_s); // .3s 
+  }
+  else if (m_timer.Get() < .5_s) {
+    RunIntake(true);
+    // Wait(0.2_s); // .5s
+  }
+  else if (m_timer.Get() < 1.5_s) {
+    StopIntake();
+
+    RunShooter(.585);
+    // Wait(1_s); //1.5s
+  }
+  else if (m_timer.Get() < 5_s) {
+    RunIntake();
+    //  Wait(3.5_s); //5s
+  }
+  else if (m_timer.Get() < 7.75_s) {
+    RunShooter(.7);
+
+    m_drive.TankDrive(-0.5,-0.5); //drives forwards + intake
+    // Wait(2.75_s); //7s
+  }
+  else if (m_timer.Get() < 8.45_s) {
+    m_drive.TankDrive(0.5, 0.5);
+    // Wait(0.7s);
+  }
+  else if (m_timer.Get() < 15_s) {
+    m_drive.TankDrive(0,0);
+    StopIntake();
+    StopShooter();
+
+    // Wait(7_s);
+    // while(m_timer.Get() < 10_s){
+      // Wait(0.01_s);
+      // }
+  }
+  else {
+
+  }
+}
 
 
 void Robot::StopShooter(){

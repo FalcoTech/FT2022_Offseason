@@ -54,6 +54,8 @@ class Robot : public frc::TimedRobot {
   void DefaultAuto();
   void OnlyDriveAuto();
 
+  void CSAAuto();
+
   //LEDS:
 
     // PWM port 9
