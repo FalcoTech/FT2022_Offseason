@@ -290,13 +290,13 @@ void Robot::DefaultAuto(){
 
  RunIntake(true);
  Wait(0.2_s); // .5s
- StopIntake(); 
+ StopIntake();
 
- RunShooter(.6);
+ RunShooter(.585);
  Wait(1_s); //1.5s
  RunIntake();
  Wait(3.5_s); //5s
- RunShooter(.65);
+ RunShooter(.7);
 
  m_drive.TankDrive(-0.5,-0.5); //drives forwards + intake
  Wait(2.75_s); //7s
@@ -596,15 +596,15 @@ m_rightLiftMotor.Set(-1*leftLift);
       for (int i = 0; i < kLength; i++) {
         m_ledBuffer[i].SetRGB(255,0,0);}
         m_led.SetData(m_ledBuffer);
-        Wait(.3_s);
+        Wait(.2_s);
       for (int i = 0; i < kLength; i++) {
         m_ledBuffer[i].SetRGB(0,255,0);}
         m_led.SetData(m_ledBuffer);
-        Wait(.3_s);
+        Wait(.2_s);
       for (int i = 0; i < kLength; i++) {
         m_ledBuffer[i].SetRGB(0,0,255);}
         m_led.SetData(m_ledBuffer);
-        Wait(.3_s);
+        Wait(.2_s);
     }
   }
 
