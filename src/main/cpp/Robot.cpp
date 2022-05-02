@@ -499,6 +499,9 @@ void Robot::RobotInit() {
   m_chooser.AddOption("Only Drive","drive");
   SmartDashboard::PutData(&m_chooser);
 
+  m_chooser2.SetDefaultOption("Stevie Drive", "stevie");
+  m_chooser2.AddOption("Gavin Drive", "gavin");
+  SmartDashboard::PutData(&m_chooser2);
 
 }
 
@@ -727,11 +730,24 @@ for (int i = 0; i < kLength; i++) {
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
   turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
+
+  string selected_drive_style = m_chooser2.GetSelected();
+
+
   if (currentDriveMode == "tank"){
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){ 
-    m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
+    
+    if (selected_drive_style == "stevie"){
+      m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
+    }
+    else if (selected_drive_style == "gavin"){
+      //m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);      
+      //TO DO: ADD A RAMP UP SPEED THING
+    }
+  
+
   }
   if (Pilot->GetXButtonPressed()){
     currentDriveMode.swap(altDriveMode);
