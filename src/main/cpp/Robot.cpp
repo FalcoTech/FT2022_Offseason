@@ -730,6 +730,8 @@ for (int i = 0; i < kLength; i++) {
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
   turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
+  double leftJoystickSquared = leftJoystick * leftJoystick * leftJoystick;
+  SmartDashboard::PutNumber("Gavin Drive Number", leftJoystickSquared);
 
   string selected_drive_style = m_chooser2.GetSelected();
 
@@ -743,7 +745,8 @@ for (int i = 0; i < kLength; i++) {
       m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
     }
     else if (selected_drive_style == "gavin"){
-      //m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);      
+      // m_drive.CurvatureDrive(leftJoystickSquared, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);      
+      m_drive.ArcadeDrive((leftJoystick * .8), (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
       //TO DO: ADD A RAMP UP SPEED THING
     }
   
