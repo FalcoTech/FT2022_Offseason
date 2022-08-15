@@ -108,6 +108,8 @@ rev::SparkMaxRelativeEncoder m_intakeFrontEncoder = m_intakeFrontMotor.GetEncode
 rev::SparkMaxRelativeEncoder m_intakeBackEncoder = m_intakeBackMotor.GetEncoder();
 DoubleSolenoid sol_Intake(1, frc::PneumaticsModuleType::REVPH, 4, 5);
 
+DoubleSolenoid sol_limelight(1, frc::PneumaticsModuleType::REVPH, 6, 7);
+
 //Lift and Climb
 static const int m_leftLiftID = 31, m_rightLiftID = 30;
 rev::CANSparkMax m_leftLiftMotor{m_leftLiftID, rev::CANSparkMax::MotorType::kBrushless};
@@ -499,9 +501,9 @@ void Robot::RobotInit() {
   m_chooser.AddOption("Only Drive","drive");
   SmartDashboard::PutData(&m_chooser);
 
-  m_chooser2.SetDefaultOption("Stevie Drive", "stevie");
-  m_chooser2.AddOption("Gavin Drive", "gavin");
-  SmartDashboard::PutData(&m_chooser2);
+  // m_chooser2.SetDefaultOption("Stevie Drive", "stevie");
+  // m_chooser2.AddOption("Gavin Drive", "gavin");
+  // SmartDashboard::PutData(&m_chooser2);
 
 }
 
@@ -567,8 +569,8 @@ void Robot::TeleopPeriodic() {
   ******************************************************************************************************************************/
   // All Smart Dashboard Values will attempt to be placed at the beginning of each Subsystem Section
 
-  SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
-  SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
+  // SmartDashboard::PutNumber("Left Climber Position ", m_leftLiftEncoder.GetPosition());
+  // SmartDashboard::PutNumber("Right Climber Position ", m_rightLiftEncoder.GetPosition());
  
   if (CoPilot->GetPOV() == 90){
     RetractClimber();
@@ -621,9 +623,11 @@ m_rightLiftMotor.Set(-1*leftLift);
                                       #### ##    ##    ##    ##     ## ##    ## ######## 
                                                           INTAKE
   ******************************************************************************************************************************/
-  SmartDashboard::PutNumber("Current Front Intake Velocity", m_intakeFrontEncoder.GetVelocity());
-  SmartDashboard::PutNumber("Current Back Intake Velocity", m_intakeBackEncoder.GetVelocity());
-  if (CoPilot->GetRightTriggerAxis() >= SmartDashboard::GetNumber("Min Intake Percent", 0.5)){
+  // SmartDashboard::PutNumber("Current Front Intake Velocity", m_intakeFrontEncoder.GetVelocity());
+  // SmartDashboard::PutNumber("Current Back Intake Velocity", m_intakeBackEncoder.GetVelocity());
+
+  // if (CoPilot->GetRightTriggerAxis() >= SmartDashboard::GetNumber("Min Intake Percent", 0.5)){
+  if (CoPilot->GetRightTriggerAxis()){  
     m_intakeFrontMotor.Set(CoPilot->GetRightTriggerAxis());
     m_intakeBackMotor.Set(CoPilot->GetRightTriggerAxis());
   }
@@ -730,28 +734,17 @@ for (int i = 0; i < kLength; i++) {
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
   turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
-  double leftJoystickSquared = leftJoystick * leftJoystick * leftJoystick;
-  SmartDashboard::PutNumber("Gavin Drive Number", leftJoystickSquared);
-
-  string selected_drive_style = m_chooser2.GetSelected();
+  double rocketdrive = -1 * (Pilot->GetRightTriggerAxis() - Pilot->GetLeftTriggerAxis());
 
 
   if (currentDriveMode == "tank"){
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){ 
-    
-    if (selected_drive_style == "stevie"){
-      m_drive.CurvatureDrive(leftJoystick, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
-    }
-    else if (selected_drive_style == "gavin"){
-      // m_drive.CurvatureDrive(leftJoystickSquared, (turningRate*.25)+(-1 * Pilot->GetRightX()), true);      
-      m_drive.ArcadeDrive((leftJoystick * .8), (turningRate*.25)+(-1 * Pilot->GetRightX()), true);
-      //TO DO: ADD A RAMP UP SPEED THING
-    }
-  
-
+      // m_drive.CurvatureDrive((Pilot->GetLeftTriggerAxis() - Pilot->GetRightTriggerAxis()), (turningRate*.1)+(-1 * Pilot->GetRightX()), true);
+      m_drive.CurvatureDrive((Pilot->GetLeftY() * Pilot->GetLeftY() * Pilot->GetLeftY()), (-1 * (Pilot->GetRightX() * Pilot->GetRightX() * Pilot->GetRightX())), true);
   }
+
   if (Pilot->GetXButtonPressed()){
     currentDriveMode.swap(altDriveMode);
   }
@@ -760,12 +753,12 @@ for (int i = 0; i < kLength; i++) {
     // leftJoystick = -1*leftJoystick;
   }
 
-  if (Pilot->GetRightBumper()){
+  if (Pilot->GetAButtonPressed()){
     LowGear();
     //Low Gear
   }
   
-  else if (Pilot->GetLeftBumper()){
+  else if (Pilot->GetBButtonPressed()){
     HighGear();
     //High Gear
   }
