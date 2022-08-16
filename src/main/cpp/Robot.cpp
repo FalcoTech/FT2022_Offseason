@@ -35,6 +35,9 @@
 
 #include "networktables/NetworkTable.h"
 #include "networktables/NetworkTableInstance.h"
+#include "networktables/NetworkTableEntry.h"
+#include "networktables/NetworkTableValue.h"
+#include "wpi/span.h"
 #include <cameraserver/CameraServer.h>
 
 
