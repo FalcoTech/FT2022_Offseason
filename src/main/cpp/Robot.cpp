@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+// Copyright c FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -402,7 +402,12 @@ void Robot::Rainbow() {
 // }
 
 
-
+std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+double targetOffsetAngle_Horizontal = table->GetNumber("tx",0.0);
+double targetOffsetAngle_Vertical = table->GetNumber("ty",0.0);
+double targetArea = table->GetNumber("ta",0.0);
+double targetSkew = table->GetNumber("ts",0.0);
+double hasTarget = table->GetNumber("tv",0);
 
 void Robot::RobotInit() {
 
@@ -556,9 +561,20 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  //_orchestra.Play();
 
-  
+// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT
+  if (hasTarget == 1){
+    m_shooterMotorL.Set(ControlMode::PercentOutput, 0.10);
+    m_shooterMotorR.Set(ControlMode::PercentOutput, 0.10);
+  }  
+
     
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
@@ -678,10 +694,10 @@ m_rightLiftMotor.Set(-1*leftLift);
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
   // double targetVelocity_Per100ms = 2000 * 2048 / 600; //Gives weird numbers so we aren't using this anymore (Maybe fixed?)
   double targetVelocity_Per100ms = 5100;
-  SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
-  SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 2048);
+  // SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
+  // SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 2048);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
-  SmartDashboard::PutNumber("Shooter Output", output);
+  // SmartDashboard::PutNumber("Shooter Output", output);
  
 
   if (CoPilot->GetBButton()){
@@ -737,15 +753,14 @@ for (int i = 0; i < kLength; i++) {
   SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
   turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
-  double rocketdrive = -1 * (Pilot->GetRightTriggerAxis() - Pilot->GetLeftTriggerAxis());
-
+  double triggerslowturn = (-.9 * (Pilot->GetRightX()) + ((.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis())));
 
   if (currentDriveMode == "tank"){
     m_drive.TankDrive(leftJoystick, rightJoystick, true);
   }
   else if (currentDriveMode == "curve"){ 
       // m_drive.CurvatureDrive((Pilot->GetLeftTriggerAxis() - Pilot->GetRightTriggerAxis()), (turningRate*.1)+(-1 * Pilot->GetRightX()), true);
-      m_drive.CurvatureDrive((Pilot->GetLeftY() * Pilot->GetLeftY() * Pilot->GetLeftY()), (-1 * (Pilot->GetRightX() * Pilot->GetRightX() * Pilot->GetRightX())), true);
+      m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), triggerslowturn, true);
   }
 
   if (Pilot->GetXButtonPressed()){
