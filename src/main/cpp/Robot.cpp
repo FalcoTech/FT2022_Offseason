@@ -1,4 +1,4 @@
-// Copyright c FIRST and other WPILib contributors.
+// Copyright c FIRST and other WPILib contributors.-
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -6,7 +6,7 @@
 #include "ctre/Phoenix.h"
 #include <rev/CANEncoder.h>
 #include <rev/CANSparkMax.h>
-#include <rev/ColorSensorV3.h>
+// #include <rev/ColorSensorV3.h>
 
 #include <fmt/core.h>
 
@@ -37,7 +37,7 @@
 #include "networktables/NetworkTableInstance.h"
 #include "networktables/NetworkTableEntry.h"
 #include "networktables/NetworkTableValue.h"
-#include "wpi/span.h"
+#include "./wpi/span.h"
 #include <cameraserver/CameraServer.h>
 
 
@@ -384,30 +384,10 @@ void Robot::Rainbow() {
     firstPixelHue %= 180;
   }
 
-// void Robot::Partymodeyeahwoo() {
-//     while (1 == 1) {
-//       for (int i = 0; i < kLength; i++) {
-//         m_ledBuffer[i].SetRGB(255,0,0);}
-//         m_led.SetData(m_ledBuffer);
-//         Wait(.75_s);
-//       for (int i = 0; i < kLength; i++) {
-//         m_ledBuffer[i].SetRGB(0,255,0);}
-//         m_led.SetData(m_ledBuffer);
-//         Wait(.75_s);
-//       for (int i = 0; i < kLength; i++) {
-//         m_ledBuffer[i].SetRGB(0,0,255);}
-//         m_led.SetData(m_ledBuffer);
-//         Wait(.75_s);      
-//     } 
-// }
+double LLSteerAdjust = 0;
+double LLDriveAdjust = 0;
 
 
-std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
-double targetOffsetAngle_Horizontal = table->GetNumber("tx",0.0);
-double targetOffsetAngle_Vertical = table->GetNumber("ty",0.0);
-double targetArea = table->GetNumber("ta",0.0);
-double targetSkew = table->GetNumber("ts",0.0);
-double hasTarget = table->GetNumber("tv",0);
 
 void Robot::RobotInit() {
 
@@ -556,25 +536,50 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-  //_orchestra.LoadMusic(song);
   m_drive.SetSafetyEnabled(true);
 }
 
 void Robot::TeleopPeriodic() {
+// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+// LIMELIGHT
+
+  if (Pilot->GetStartButton()) {
+    double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+    double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+    double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+    double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+
+// NEGATIVE TURNING VALUE TURNS RIGHT
+
+    if (tx < -5) { //x value is too far left
+      LLSteerAdjust = -1; //set steer value to right (negative = right)
+    } else if (tx > 5) { //x value is too far right
+      LLSteerAdjust = 1; //set steer value to turn left (positive = left)
+    } else { //x value is between -5 and 5
+      LLSteerAdjust = 0; //no steer movement
+    }
+
+//POSITIVE DRIVE VALUE IS FORWARD (i think)
+
+    if (ta > 50) { //too close to target
+      LLDriveAdjust = 1; //move forward (away from target (positive = forward?))
+    } else if (ta < 20) { //target is too far away
+      LLDriveAdjust = -1; //move backwards (towards target (negative = backwards?))
+    } else { //target area is between 20 and 50 
+      LLSteerAdjust = 0; //no movement
+    }
+
+    m_drive.CurvatureDrive((LLDriveAdjust*.1), (LLSteerAdjust*.1), true);
+  }
 
 // LIMELIGHT
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
 // LIMELIGHT
-  if (hasTarget == 1){
-    m_shooterMotorL.Set(ControlMode::PercentOutput, 0.10);
-    m_shooterMotorR.Set(ControlMode::PercentOutput, 0.10);
-  }  
-
     
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
