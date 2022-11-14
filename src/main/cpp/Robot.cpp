@@ -545,7 +545,7 @@ void Robot::TeleopPeriodic() {
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
 // LIMELIGHT
-
+  
   if (Pilot->GetStartButton()) {
     double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
     double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
@@ -575,6 +575,11 @@ void Robot::TeleopPeriodic() {
     m_drive.CurvatureDrive((LLDriveAdjust*.1), (LLSteerAdjust*.1), true);
   }
 
+//    if (Pilot->GetStartButton()) {
+//     m_drive.CurvatureDrive((LLDriveAdjust*.1), (LLSteerAdjust*.1), true);
+//   }
+  
+  
 // LIMELIGHT
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
 // LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
