@@ -580,9 +580,9 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLSteerAdjust = tx*-.02; 
-      m_drive.CurvatureDrive(0, LLSteerAdjust, true);
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
       
-    } else if(tx > -8 && tx < 8){
+    } else if(tx > -8 && tx < 8){ //target is alligned 
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
       ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
       ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
@@ -592,7 +592,9 @@ void Robot::TeleopPeriodic() {
       LLSteerAdjust = 0;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
       
-    } else if(ta > .2){ //target is too close
+    } 
+    
+    if(ta > .2){ //target is too close
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
       ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
       ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
@@ -612,17 +614,29 @@ void Robot::TeleopPeriodic() {
       LLDriveAdjust = .15;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go backwards
       
-    } else if (ta > .05 && ta <.2){ //target is aligned and in range
-      LLDriveAdjust = 0;
-      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+    } else if (ta > .05 && ta <.2){ //target is in range
+      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
-    } else { // target is aligned and in range
-      LLSteerAdjust = 0;
       LLDriveAdjust = 0;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+    } 
+    
+   if(ta>.05 && ta<.2 && tx>-8 && tx<8) { // target is aligned and in range
+     tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+     ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+     ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+     thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+     tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+     
+     LLSteerAdjust = 0;
+     LLDriveAdjust = 0;
+     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
     }
   }  
-    
     
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
