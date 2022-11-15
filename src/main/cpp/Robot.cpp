@@ -542,9 +542,16 @@ double LLDriveAdjust = 0;
 
 
 void Robot::TeleopPeriodic() {
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+/********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
 
   double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
   double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
@@ -614,12 +621,8 @@ void Robot::TeleopPeriodic() {
       LLDriveAdjust = 0;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
     }
-  }
-  
-
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
-// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT// LIMELIGHT
+  }  
+    
     
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
