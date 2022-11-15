@@ -563,7 +563,7 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLSteerAdjust = tx*-.02; //target x value times -.02 (makes a positive turn value)
-      m_drive.CurvatureDrive(0, LLSteerAdjust, true);
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
       
     } else if(tx > 8){ //target is too far right (need to turn left (negative))
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
@@ -583,7 +583,7 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLSteerAdjust = 0;
-      m_drive.CurvatureDrive(0, LLSteerAdjust, true);
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
       
     } else if(ta > .2){ //target is too close
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
@@ -592,7 +592,8 @@ void Robot::TeleopPeriodic() {
       thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
-      m_drive.CurvatureDrive(-.15, LLSteerAdjust, true); //go forwards
+      LLDriveAdjust = -.15;
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go forwards
       
     } else if (ta < .05){ //target is too far
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
@@ -601,12 +602,17 @@ void Robot::TeleopPeriodic() {
       thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
-      m_drive.CurvatureDrive(.15, LLSteerAdjust, true); //go backwards
+      LLDriveAdjust = .15;
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go backwards
       
-    } else { //target is aligned and in range
+    } else if (ta > .05 && ta <.2){ //target is aligned and in range
+      LLDriveAdjust = 0;
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      
+    } else { // target is aligned and in range
       LLSteerAdjust = 0;
       LLDriveAdjust = 0;
-      m_drive.CurvatureDrive(0, 0, true);       
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
     }
   }
   
