@@ -609,8 +609,9 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLDriveAdjust = -.15;
-      LLShooterSpeed = (ta*.005) +.5
+      LLShooterSpeed = (ta*-.005) +.5;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go forwards
+      //tell shooter to run here
       
     } else if (ta < .02){ //target is too far
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
@@ -620,7 +621,9 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLDriveAdjust = .15;
+      LLShooterSpeed = (ta*-.005) +.5;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go backwards
+      //tell shooter to run here
       
     } else if (ta > .05 && ta <.2){ //target is in range
       tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
@@ -630,7 +633,10 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLDriveAdjust = 0;
+      LLShooterSpeed = (ta*-.005) +.5;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      //tell shooter to run here
+    
     } //end if ta loop
     
     if(ta>.05 && ta<.2 && tx>-8 && tx<8) { // target is aligned and in range
@@ -642,7 +648,10 @@ void Robot::TeleopPeriodic() {
      
       LLSteerAdjust = 0;
       LLDriveAdjust = 0;
+      LLShooterSpeed = (ta*-.005) + .5;
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      //tell shooter to run here
+      
     } //end if tx AND ta loop
 
     
