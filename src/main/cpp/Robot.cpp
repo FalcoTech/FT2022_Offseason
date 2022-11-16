@@ -536,13 +536,11 @@ void Robot::TeleopInit() {
   m_drive.SetSafetyEnabled(true);
 }
 
-
+//THESE VALUES MAY NEED TO GO IN TELEOPINIT
 double LLSteerAdjust = 0;
 double LLDriveAdjust = 0;
 //THESE VALUES MAY NEED TO GO IN TELEOPINIT
-double LLHorCamFOV = 59.6; 
-double LLVertCamFOV = 49.7;
-double LLTargetDistance = 0;
+
 
 void Robot::TeleopPeriodic() {
 /********************************************************************************************************************************
@@ -645,8 +643,6 @@ void Robot::TeleopPeriodic() {
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
     } //end if tx AND ta loop
 
-    //Start trig stuff
-    LLTargetDistance = 0;
     
 //     if(){
 //     new if line (if I need it)
