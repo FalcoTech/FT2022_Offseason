@@ -539,6 +539,7 @@ void Robot::TeleopInit() {
 //THESE VALUES MAY NEED TO GO IN TELEOPINIT
 double LLSteerAdjust = 0;
 double LLDriveAdjust = 0;
+double LLShooterSpeed = 0;
 //THESE VALUES MAY NEED TO GO IN TELEOPINIT
 
 
@@ -608,6 +609,7 @@ void Robot::TeleopPeriodic() {
       tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
       
       LLDriveAdjust = -.15;
+      LLShooterSpeed = (ta*.005) +.5
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go forwards
       
     } else if (ta < .02){ //target is too far
@@ -645,7 +647,7 @@ void Robot::TeleopPeriodic() {
 
     
 //     if(){
-//     new if line (if I need it)
+//      
 //     }
   
   }//end if rectangle loop  
