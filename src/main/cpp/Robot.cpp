@@ -363,28 +363,61 @@ void Robot::CSAAuto(){
   }
 }
 
-
 void Robot::StopShooter(){
   m_shooterMotorL.Set(0);
   m_shooterMotorR.Set(0);
 }
-
-void Robot::Rainbow() {
-    // For every pixel
-    for (int i = 0; i < kLength; i++) {
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      const auto pixelHue = (firstPixelHue + (i * 180 / kLength)) % 180;
-      // Set the value
-      m_ledBuffer[i].SetHSV(pixelHue, 255, 128);
-    } 
-    // Increase by to make the rainbow "move"
-    firstPixelHue += 3;
-    // Check bounds
-    firstPixelHue %= 180;
+/********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
+/********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
+/********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
+void Robot::LLSteer(){
+  double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+  double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+  double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+  double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+  double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+  double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+  
+  while (thor > tvert){
+    tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+    ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+    ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+    thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);
+    tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+    
+    
+    
   }
 
 
+}
 
 void Robot::RobotInit() {
 
@@ -486,10 +519,6 @@ void Robot::RobotInit() {
   m_chooser.AddOption("Only Drive","drive");
   SmartDashboard::PutData(&m_chooser);
 
-  // m_chooser2.SetDefaultOption("Stevie Drive", "stevie");
-  // m_chooser2.AddOption("Gavin Drive", "gavin");
-  // SmartDashboard::PutData(&m_chooser2);
-
 }
 
 
@@ -553,13 +582,28 @@ void Robot::TeleopPeriodic() {
                                   ##########        ##########          
                                             LIMELIGHT
  *******************************************************************************************************************************/ 
+  /********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
+  /********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
 
-  double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-  double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-  double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-  double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
-  double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-  double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+
   //Turn & Driving Tracking
   while (thor > tvert){ //if target bounding box is a rectangle
      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
@@ -628,70 +672,8 @@ void Robot::TeleopPeriodic() {
       
       } //end ta loop
 
-    }
-
-
-
-    // if(ta > .2){ //target is too close
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-    //   LLDriveAdjust = 0; //-.1
-    //   LLShooterSpeed = (ta*-.005) +.5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go forwards
-    //   //tell shooter to run here
-      
-    // } else if (ta < .02){ //target is too far
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-    //   LLDriveAdjust = 0; //.1
-    //   LLShooterSpeed = (ta*-.005) +.5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go backwards
-    //   //tell shooter to run here
-      
-    // } else if (ta > .05 && ta <.2){ //target is in range
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-    //   LLDriveAdjust = 0;
-    //   LLShooterSpeed = (ta*-.005) +.5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-    //   //tell shooter to run here
-    
-    // } //end if ta loop
-    
-    // if(ta>.05 && ta<.2 && tx>-8 && tx<8) { // target is aligned and in range
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-     
-    //   LLSteerAdjust = 0;
-    //   LLDriveAdjust = 0;
-    //   LLShooterSpeed = (ta*-.005) + .5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-    //   //tell shooter to run here
-      
-    // } //end if tx AND ta loop
-
-    
-//     if(){
-//      
-//     }
-  
-  }//end if rectangle loop  
-    
+    } 
+  }
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
                                                 ##        ##  ##          ##    
