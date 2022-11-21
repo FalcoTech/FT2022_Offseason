@@ -383,7 +383,96 @@ void Robot::Rainbow() {
     // Check bounds
     firstPixelHue %= 180;
   }
+/********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
 
+
+void Robot::LLSteerToTarget(){
+  double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+  double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+  double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+  double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+  double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+  double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+  //Turn & Driving Tracking
+  while (thor > tvert){ //if target bounding box is a rectangle
+     tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+     ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+     ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+     thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+     tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+    
+    if(tx < -8){ //target is too far left (need to turn right (positive))
+      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+      
+      double LLSteerAdjust = tx*-.01; //target x value times -.02 (makes a positive turn value)
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      
+    } else if(tx > 8){ //target is too far right (need to turn left (negative))
+      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+      
+      double LLSteerAdjust = tx*-.01; 
+      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
+      
+    } else if(tx > -8 && tx < 8){ //target is alligned 
+      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+      
+      double LLSteerAdjust = 0;
+     //ORIGINAL end if tx loop
+      if (ta > 2){
+        tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+        ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+        ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+        thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+        tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+
+        double LLDriveAdjust = -.175;
+        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      //   // LLShooterSpeed = (ta*-.01) +.25;
+      //   m_shooterMotorL.Set(ControlMode::PercentOutput, ((ta*-.01)+25));
+      //   m_shooterMotorR.Set(ControlMode::PercentOutput, ((ta*-.01)+25));
+      
+      } else if(ta <.75){
+        tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+        ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+        ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+        thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+        tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+
+        double LLDriveAdjust = .175;
+        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      //   // LLShooterSpeed = 0;
+      //   m_shooterMotorL.Set(0);
+      //   m_shooterMotorR.Set(0);
+      } else if (ta>.5 && ta<3){
+        double LLDriveAdjust = 0;
+        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+      
+      } //end ta loop
+
+    }
+  }
+}
 
 
 void Robot::RobotInit() {
@@ -536,162 +625,8 @@ void Robot::TeleopInit() {
   m_drive.SetSafetyEnabled(true);
 }
 
-//THESE VALUES MAY NEED TO GO IN TELEOPINIT
-double LLSteerAdjust = 0;
-double LLDriveAdjust = 0;
-//THESE VALUES MAY NEED TO GO IN TELEOPINIT
-
 
 void Robot::TeleopPeriodic() {
-/********************************************************************************************************************************
-                                  ##                ##
-                                  ##                ##
-                                  ##                ##
-                                  ##                ##    
-                                  ##                ##
-                                  ##                ##
-                                  ##########        ##########          
-                                            LIMELIGHT
- *******************************************************************************************************************************/ 
-
-  double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-  double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-  double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-  double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
-  double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-  double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  //Turn & Driving Tracking
-  while (thor > tvert){ //if target bounding box is a rectangle
-     tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-     ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-     ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-     thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-     tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-    
-    if(tx < -8){ //target is too far left (need to turn right (positive))
-      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-      double LLSteerAdjust = tx*-.01; //target x value times -.02 (makes a positive turn value)
-      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-      
-    } else if(tx > 8){ //target is too far right (need to turn left (negative))
-      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-      double LLSteerAdjust = tx*-.01; 
-      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
-      
-    } else if(tx > -8 && tx < 8){ //target is alligned 
-      tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-      ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-      ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-      thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-      tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-      double LLSteerAdjust = 0;
-     //ORIGINAL end if tx loop
-      if (ta > 2){
-        tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-        ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-        ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-        thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-        tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-
-        double LLDriveAdjust = -.175;
-        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-      //   // LLShooterSpeed = (ta*-.01) +.25;
-      //   m_shooterMotorL.Set(ControlMode::PercentOutput, ((ta*-.01)+25));
-      //   m_shooterMotorR.Set(ControlMode::PercentOutput, ((ta*-.01)+25));
-      
-      } else if(ta <.75){
-        tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-        ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-        ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-        thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-        tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-
-        double LLDriveAdjust = .175;
-        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-      //   // LLShooterSpeed = 0;
-      //   m_shooterMotorL.Set(0);
-      //   m_shooterMotorR.Set(0);
-      } else if (ta>.5 && ta<3){
-        double LLDriveAdjust = 0;
-        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-      
-      } //end ta loop
-
-    }
-
-
-
-    // if(ta > .2){ //target is too close
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-    //   LLDriveAdjust = 0; //-.1
-    //   LLShooterSpeed = (ta*-.005) +.5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go forwards
-    //   //tell shooter to run here
-      
-    // } else if (ta < .02){ //target is too far
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-    //   LLDriveAdjust = 0; //.1
-    //   LLShooterSpeed = (ta*-.005) +.5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); //go backwards
-    //   //tell shooter to run here
-      
-    // } else if (ta > .05 && ta <.2){ //target is in range
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-      
-    //   LLDriveAdjust = 0;
-    //   LLShooterSpeed = (ta*-.005) +.5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-    //   //tell shooter to run here
-    
-    // } //end if ta loop
-    
-    // if(ta>.05 && ta<.2 && tx>-8 && tx<8) { // target is aligned and in range
-    //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-     
-    //   LLSteerAdjust = 0;
-    //   LLDriveAdjust = 0;
-    //   LLShooterSpeed = (ta*-.005) + .5;
-    //   m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-    //   //tell shooter to run here
-      
-    // } //end if tx AND ta loop
-
-    
-//     if(){
-//      
-//     }
-  
-  }//end if rectangle loop  
-    
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
                                                 ##        ##  ##          ##    
