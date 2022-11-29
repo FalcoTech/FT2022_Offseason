@@ -536,11 +536,10 @@ void Robot::TeleopInit() {
   m_drive.SetSafetyEnabled(true);
 }
 
-//THESE VALUES MAY NEED TO GO IN TELEOPINIT
+
 double LLSteerAdjust = 0;
 double LLDriveAdjust = 0;
-//THESE VALUES MAY NEED TO GO IN TELEOPINIT
-
+double LLShootAdjust = 0;
 
 void Robot::TeleopPeriodic() {
 /********************************************************************************************************************************
@@ -553,22 +552,23 @@ void Robot::TeleopPeriodic() {
                                   ##########        ##########          
                                             LIMELIGHT
  *******************************************************************************************************************************/ 
-
   double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
   double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
   double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
   double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
   double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
   double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  //Turn & Driving Tracking
-  while (thor > tvert){ //if target bounding box is a rectangle
-     tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-     ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-     ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-     thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-     tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+ 
+  while (thor > tvert){
+    //if rectangle
+    tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+    ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+    ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+    thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+    tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
     
     if(tx < -8){ //target is too far left (need to turn right (positive))
+    //turn tracking  
       double LLSteerAdjust = tx*-.01; //target x value times -.02 (makes a positive turn value)
       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
       
@@ -582,12 +582,14 @@ void Robot::TeleopPeriodic() {
      //ORIGINAL end if tx loop
       
       if (ta > 2){
+      //drive+adjust adjust
         double LLDriveAdjust = -.175;
         m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
         StopShooter();
         
       } else if(ta <.75){
         double LLDriveAdjust = .175;
+        double LLShootAdjust = 
         m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
         m_shooterMotorL.Set(ControlMode::PercentOutput, 0.20);
         m_shooterMotorR.Set(ControlMode::PercentOutput, 0.20);
@@ -599,7 +601,6 @@ void Robot::TeleopPeriodic() {
         m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
 
       } //end ta loop
-
     }//end tx loop
   }//end if rectangle loop  
     
