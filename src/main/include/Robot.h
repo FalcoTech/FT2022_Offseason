@@ -53,9 +53,7 @@ class Robot : public frc::TimedRobot {
   void RunShooterAtRPM(double rpm);
   void DefaultAuto();
   void OnlyDriveAuto();
-
   void CSAAuto();
-
   //LEDS:
 
     // PWM port 9
