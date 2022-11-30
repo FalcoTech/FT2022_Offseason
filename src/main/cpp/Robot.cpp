@@ -385,7 +385,6 @@ void Robot::Rainbow() {
   }
 
 
-
 void Robot::RobotInit() {
 
  // Default to a length of 60, start empty output
@@ -556,53 +555,73 @@ void Robot::TeleopPeriodic() {
   double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
   double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
   double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+  double ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
   double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
   double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
- 
-  while (thor > tvert){
-    //if rectangle
+  double tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+  double tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+
+  while (Pilot->GetYButtonPressed()){
     tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
     ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
     ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+    tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+    ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
     thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
     tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+    tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+    tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+
+  }
+
+  // if (Pilot->GetYButtonReleased()){
+  //   nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 1);
+  // }
+
+  // while (thor > tvert){
+  //   //if rectangle
+  //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+  //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+  //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+  //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+  //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
     
-    if(tx < -8){ //target is too far left (need to turn right (positive))
-    //turn tracking  
-      double LLSteerAdjust = tx*-.01; //target x value times -.02 (makes a positive turn value)
-      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+  //   if(tx < -8){ //target is too far left (need to turn right (positive))
+  //   //turn tracking  
+  //     double LLSteerAdjust = tx*-.01; //target x value times -.02 (makes a positive turn value)
+  //     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
       
-    } else if(tx > 8){ //target is too far right (need to turn left (negative))
-      double LLSteerAdjust = tx*-.01; 
-      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
+  //   } else if(tx > 8){ //target is too far right (need to turn left (negative))
+  //     double LLSteerAdjust = tx*-.01; 
+  //     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
       
-    } else if(tx > -8 && tx < 8){ //target is alligned
-      double LLSteerAdjust = 0;
-      m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
-     //ORIGINAL end if tx loop
+  //   } else if(tx > -8 && tx < 8){ //target is alligned
+  //     double LLSteerAdjust = 0;
+  //     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
+  //    //ORIGINAL end if tx loop
       
-      if (ta > 2){
-      //drive+adjust adjust
-        double LLDriveAdjust = -.175;
-        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-        StopShooter();
+  //     if (ta > 2){
+  //     //drive+adjust adjust
+  //       double LLDriveAdjust = -.175;
+  //       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+  //       StopShooter();
         
-      } else if(ta <.75){
-        double LLDriveAdjust = .175;
-        double LLShootAdjust = 
-        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-        m_shooterMotorL.Set(ControlMode::PercentOutput, 0.20);
-        m_shooterMotorR.Set(ControlMode::PercentOutput, 0.20);
+  //     } else if(ta <.75){
+  //       double LLDriveAdjust = .175;
+  //       double LLShootAdjust = 0;
+  //       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+  //       m_shooterMotorL.Set(ControlMode::PercentOutput, 0.20);
+  //       m_shooterMotorR.Set(ControlMode::PercentOutput, 0.20);
 
-      } else if (ta>.5 && ta<3){
-        double LLDriveAdjust = 0;
-        m_shooterMotorL.Set(ControlMode::PercentOutput, 0.10);
-        m_shooterMotorR.Set(ControlMode::PercentOutput, 0.10);
-        m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
+  //     } else if (ta>.5 && ta<3){
+  //       double LLDriveAdjust = 0;
+  //       m_shooterMotorL.Set(ControlMode::PercentOutput, 0.10);
+  //       m_shooterMotorR.Set(ControlMode::PercentOutput, 0.10);
+  //       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
 
-      } //end ta loop
-    }//end tx loop
-  }//end if rectangle loop  
+  //     } //end ta loop
+  //   }//end tx loop
+  // }//end if rectangle loop  
     
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
@@ -794,10 +813,6 @@ for (int i = 0; i < kLength; i++) {
   // if (Pilot->GetXButtonPressed()){
   //   currentDriveMode.swap(altDriveMode);
   // }
-
-  if (Pilot->GetYButtonPressed()){
-    // leftJoystick = -1*leftJoystick;
-  }
 
   if (Pilot->GetAButtonPressed()){
     LowGear();
