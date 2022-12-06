@@ -777,12 +777,9 @@ m_rightLiftMotor.Set(-1*leftLift);
       m_shooterMotorR.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
     
     }    
-  
-//tlong = 101.5, shooteroutput = 40% = 2.5375
-//tlong = 91, shooteroutput = 43% = 2.11627
-//tlong = 80.2, shooteroutput = 45% = 1.78222
-//tlong = 65.6, shooteroutput = 50% = 1.312
-//tlong = 51, shooteroutput = 55% = .927272727
+
+//tlong = 101.5, shooteroutput = 40% = 2.5375 //tlong = 91, shooteroutput = 43% = 2.11627 //tlong = 80.2, shooteroutput = 45% = 1.78222 //tlong = 65.6, shooteroutput = 50% = 1.312 //tlong = 51, shooteroutput = 55% = .927272727
+    
   } //y button loop end?
   else {
     m_shooterMotorL.Set(0);
