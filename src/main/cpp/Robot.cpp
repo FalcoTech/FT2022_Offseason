@@ -539,7 +539,7 @@ void Robot::TeleopInit() {
 double LLSteerAdjust = 0;
 double LLDriveAdjust = 0;
 double LLShootAdjust = 0;
-double LLImageDist = 0;
+double LLHorDist = 0;
 
 double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
 double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
@@ -766,17 +766,14 @@ m_rightLiftMotor.Set(-1*leftLift);
     m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
   else if (Pilot->GetYButton()){
-    
-    if (thor > tvert){
-      double LLImageDist = tlong/72;
-      m_shooterMotorL.Set(ControlMode::PercentOutput, 0.43);
-      m_shooterMotorR.Set(ControlMode::PercentOutput, 0.43);
+    if (thor > tvert) && (tlong > 0){
+      m_shooterMotorL.Set(ControlMode::PercentOutput, ((-.003 * tlong) + .695));
+      m_shooterMotorR.Set(ControlMode::PercentOutput, ((-.003 * tlong) + .695));
   //tlong = 101.5, shooteroutput = 40% = 2.5375
   //tlong = 91, shooteroutput = 43% = 2.11627
   //tlong = 80.2, shooteroutput = 45% = 1.78222
   //tlong = 65.6, shooteroutput = 50% = 1.312
   //tlong = 51, shooteroutput = 55% = .927272727
-
     }
   }
   else {
