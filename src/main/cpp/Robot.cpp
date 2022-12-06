@@ -767,8 +767,8 @@ m_rightLiftMotor.Set(-1*leftLift);
   }
   else if (Pilot->GetYButton()){
     if (thor > tvert) && (tlong > 0){
-      m_shooterMotorL.Set(ControlMode::PercentOutput, ((-.003 * tlong) + .695));
-      m_shooterMotorR.Set(ControlMode::PercentOutput, ((-.003 * tlong) + .695));
+      m_shooterMotorL.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
+      m_shooterMotorR.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
   //tlong = 101.5, shooteroutput = 40% = 2.5375
   //tlong = 91, shooteroutput = 43% = 2.11627
   //tlong = 80.2, shooteroutput = 45% = 1.78222
