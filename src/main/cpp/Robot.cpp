@@ -538,8 +538,6 @@ void Robot::TeleopInit() {
 
 double LLSteerAdjust = 0;
 double LLDriveAdjust = 0;
-double LLShootAdjust = 0;
-double LLHorDist = 0;
 
 double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
 double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
@@ -550,6 +548,9 @@ double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetN
 double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
 double tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
 double tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+
+double LLTriggerSlowTurn = (-.9*Pilot->GetRightX()) + (.2*Pilot->GetLeftTriggerAxis()) - (-.2*Pilot->GetRightTriggerAxis()) + (tx*-.01); //.015?
+
 
 void Robot::TeleopPeriodic() {
 /********************************************************************************************************************************
@@ -572,6 +573,7 @@ void Robot::TeleopPeriodic() {
   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
   tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
   tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+  LLTriggerSlowTurn = (-.9*Pilot->GetRightX()) + (.2*Pilot->GetLeftTriggerAxis()) - (-.2*Pilot->GetRightTriggerAxis()) + (tx*-.01);
   // if (Pilot->GetYButtonReleased()){
   //   nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 1);
   // }
@@ -765,17 +767,23 @@ m_rightLiftMotor.Set(-1*leftLift);
     m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
     m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
-  else if (Pilot->GetYButton()){
-    if (thor > tvert) && (tlong > 0){
+  else if (Pilot->GetYButton()){ //y button loop start
+    if (tx < -4 or tx > 4){ //out of range loop start
+      m_drive.CurvatureDrive((.9 * Pilot->GetLeftY()), LLTriggerSlowTurn, true);  
+     
+    } else if (tx > -4 && tx < 4){
+      m_drive.CurvatureDrive((.9 * Pilot->GetLeftY()), triggerslowturn, true);
       m_shooterMotorL.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
       m_shooterMotorR.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
-  //tlong = 101.5, shooteroutput = 40% = 2.5375
-  //tlong = 91, shooteroutput = 43% = 2.11627
-  //tlong = 80.2, shooteroutput = 45% = 1.78222
-  //tlong = 65.6, shooteroutput = 50% = 1.312
-  //tlong = 51, shooteroutput = 55% = .927272727
-    }
-  }
+    
+    }    
+  
+//tlong = 101.5, shooteroutput = 40% = 2.5375
+//tlong = 91, shooteroutput = 43% = 2.11627
+//tlong = 80.2, shooteroutput = 45% = 1.78222
+//tlong = 65.6, shooteroutput = 50% = 1.312
+//tlong = 51, shooteroutput = 55% = .927272727
+  } //y button loop end?
   else {
     m_shooterMotorL.Set(0);
     m_shooterMotorR.Set(0);
