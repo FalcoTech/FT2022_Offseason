@@ -539,6 +539,17 @@ void Robot::TeleopInit() {
 double LLSteerAdjust = 0;
 double LLDriveAdjust = 0;
 double LLShootAdjust = 0;
+double LLImageDist = 0;
+
+double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+double ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
+double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+double tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+double tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
 
 void Robot::TeleopPeriodic() {
 /********************************************************************************************************************************
@@ -551,29 +562,16 @@ void Robot::TeleopPeriodic() {
                                   ##########        ##########          
                                             LIMELIGHT
  *******************************************************************************************************************************/ 
-  double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-  double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-  double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-  double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
-  double ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
-  double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-  double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  double tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  double tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
 
-  while (Pilot->GetYButtonPressed()){
-    tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-    ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-    ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-    tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
-    ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
-    thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-    tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-    tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-    tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-
-  }
-
+  tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
+  ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
+  ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
+  tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
+  ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
+  thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
+  tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+  tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
+  tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
   // if (Pilot->GetYButtonReleased()){
   //   nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 1);
   // }
@@ -741,7 +739,7 @@ m_rightLiftMotor.Set(-1*leftLift);
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
   // double targetVelocity_Per100ms = 2000 * 2048 / 600; //Gives weird numbers so we aren't using this anymore (Maybe fixed?)
   double targetVelocity_Per100ms = 5100;
-  // SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
+  SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
   // SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 2048);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   // SmartDashboard::PutNumber("Shooter Output", output);
@@ -767,11 +765,20 @@ m_rightLiftMotor.Set(-1*leftLift);
     m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
     m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
-  // else if (CoPilot->GetXButton()){
-    // shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
-    // m_shooterMotorL.Set(m_shooterSlewLimiter.Calculate(shooterRPM, shooterTargetRPM));
-    // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
-  //}
+  else if (Pilot->GetYButton()){
+    
+    if (thor > tvert){
+      double LLImageDist = tlong/72;
+      m_shooterMotorL.Set(ControlMode::PercentOutput, 0.43);
+      m_shooterMotorR.Set(ControlMode::PercentOutput, 0.43);
+  //tlong = 101.5, shooteroutput = 40% = 2.5375
+  //tlong = 91, shooteroutput = 43% = 2.11627
+  //tlong = 80.2, shooteroutput = 45% = 1.78222
+  //tlong = 65.6, shooteroutput = 50% = 1.312
+  //tlong = 51, shooteroutput = 55% = .927272727
+
+    }
+  }
   else {
     m_shooterMotorL.Set(0);
     m_shooterMotorR.Set(0);
