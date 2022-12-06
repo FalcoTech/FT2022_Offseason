@@ -767,7 +767,10 @@ m_rightLiftMotor.Set(-1*leftLift);
     m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
     m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
-  else if (Pilot->GetYButton()){ //y button loop start
+  else if (Pilot->GetYButton()){//y button loop start
+    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("camMode", 0); //vision processor cam
+    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 3); //turn limelight on ONLY when Y is pressed
+   
     if (tx < -4 or tx > 4){ //out of range loop start
       m_drive.CurvatureDrive((.9 * Pilot->GetLeftY()), LLTriggerSlowTurn, true);  
      
@@ -784,6 +787,8 @@ m_rightLiftMotor.Set(-1*leftLift);
   else {
     m_shooterMotorL.Set(0);
     m_shooterMotorR.Set(0);
+    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 1); //Limelight is off by default
+    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("camMode", 1); //driver cam mode ("backup camera")
 for (int i = 0; i < kLength; i++) {
    m_ledBuffer[i].SetRGB(255,0,0);}
   m_led.SetData(m_ledBuffer);
