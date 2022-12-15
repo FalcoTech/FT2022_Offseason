@@ -385,6 +385,7 @@ void Robot::Rainbow() {
   }
 
 
+
 void Robot::RobotInit() {
 
  // Default to a length of 60, start empty output
@@ -536,93 +537,10 @@ void Robot::TeleopInit() {
 }
 
 
-double LLSteerAdjust = 0;
-double LLDriveAdjust = 0;
-
-double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
-double ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
-double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-double tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-double tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-
-double LLTriggerSlowTurn = (-.9*Pilot->GetRightX()) + (.2*Pilot->GetLeftTriggerAxis()) - (-.2*Pilot->GetRightTriggerAxis()) + (tx*-.01); //.015?
 
 
 void Robot::TeleopPeriodic() {
-/********************************************************************************************************************************
-                                  ##                ##
-                                  ##                ##
-                                  ##                ##
-                                  ##                ##    
-                                  ##                ##
-                                  ##                ##
-                                  ##########        ##########          
-                                            LIMELIGHT
- *******************************************************************************************************************************/ 
-
-  tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-  ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-  ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-  tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv", 0.0);
-  ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts", 0.0);
-  thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-  tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-  LLTriggerSlowTurn = (-.9*Pilot->GetRightX()) + (.2*Pilot->GetLeftTriggerAxis()) - (-.2*Pilot->GetRightTriggerAxis()) + (tx*-.01);
-  // if (Pilot->GetYButtonReleased()){
-  //   nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 1);
-  // }
-
-  // while (thor > tvert){
-  //   //if rectangle
-  //   tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx", 0.0);
-  //   ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty", 0.0);
-  //   ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta", 0.0);
-  //   thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor", 0.0);  
-  //   tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert", 0.0);
-    
-  //   if(tx < -8){ //target is too far left (need to turn right (positive))
-  //   //turn tracking  
-  //     double LLSteerAdjust = tx*-.01; //target x value times -.02 (makes a positive turn value)
-  //     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-      
-  //   } else if(tx > 8){ //target is too far right (need to turn left (negative))
-  //     double LLSteerAdjust = tx*-.01; 
-  //     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
-      
-  //   } else if(tx > -8 && tx < 8){ //target is alligned
-  //     double LLSteerAdjust = 0;
-  //     m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true); 
-  //    //ORIGINAL end if tx loop
-      
-  //     if (ta > 2){
-  //     //drive+adjust adjust
-  //       double LLDriveAdjust = -.175;
-  //       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-  //       StopShooter();
-        
-  //     } else if(ta <.75){
-  //       double LLDriveAdjust = .175;
-  //       double LLShootAdjust = 0;
-  //       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-  //       m_shooterMotorL.Set(ControlMode::PercentOutput, 0.20);
-  //       m_shooterMotorR.Set(ControlMode::PercentOutput, 0.20);
-
-  //     } else if (ta>.5 && ta<3){
-  //       double LLDriveAdjust = 0;
-  //       m_shooterMotorL.Set(ControlMode::PercentOutput, 0.10);
-  //       m_shooterMotorR.Set(ControlMode::PercentOutput, 0.10);
-  //       m_drive.CurvatureDrive(LLDriveAdjust, LLSteerAdjust, true);
-
-  //     } //end ta loop
-  //   }//end tx loop
-  // }//end if rectangle loop  
-    
+  
   /******************************************************************************************************************************
                                                 ##       #### ######## ######## 
                                                 ##        ##  ##          ##    
@@ -713,7 +631,7 @@ m_rightLiftMotor.Set(-1*leftLift);
   if (Pilot->GetLeftStickButtonPressed()){
     RetractIntake();
   }
-
+  
   else if (Pilot->GetRightStickButtonPressed()){
     ExtendIntake();
   }
@@ -741,7 +659,7 @@ m_rightLiftMotor.Set(-1*leftLift);
   double shooterRPM = m_shooterMotorL.GetSelectedSensorVelocity() / 2048/*Units per rotation*/ * 10/*100ms to 1000ms/1s*/ * 60/*1s to 60s/1m*/ * shooterGearRatio;
   // double targetVelocity_Per100ms = 2000 * 2048 / 600; //Gives weird numbers so we aren't using this anymore (Maybe fixed?)
   double targetVelocity_Per100ms = 5100;
-  SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
+  // SmartDashboard::PutNumber("Shooter RPM", shooterRPM);
   // SmartDashboard::PutNumber("Shooter Target RPM", targetVelocity_Per100ms * 600 / 2048);
   double output = std::clamp(m_shooterPID.Calculate(shooterRPM), shooterMinRPM, shooterMaxRPM);
   // SmartDashboard::PutNumber("Shooter Output", output);
@@ -767,28 +685,14 @@ m_rightLiftMotor.Set(-1*leftLift);
     m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
     m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
   }
-  else if (Pilot->GetYButton()){//y button loop start
-    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("camMode", 0); //vision processor cam
-    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 3); //turn limelight on ONLY when Y is pressed
-   
-    if (tx < -4 or tx > 4){ //out of range loop start
-      m_drive.CurvatureDrive((.9 * Pilot->GetLeftY()), LLTriggerSlowTurn, true);  
-     
-    } else if (tx > -4 && tx < 4){
-      m_drive.CurvatureDrive((.9 * Pilot->GetLeftY()), triggerslowturn, true);
-      m_shooterMotorL.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
-      m_shooterMotorR.Set(ControlMode::PercentOutput, ((-.0029 * tlong) + .7));
-    
-    }    
-
-//tlong = 101.5, shooteroutput = 40% = 2.5375 //tlong = 91, shooteroutput = 43% = 2.11627 //tlong = 80.2, shooteroutput = 45% = 1.78222 //tlong = 65.6, shooteroutput = 50% = 1.312 //tlong = 51, shooteroutput = 55% = .927272727
-    
-  } //y button loop end?
+  // else if (CoPilot->GetXButton()){
+    // shooterTargetRPM = SmartDashboard::GetNumber("Shooter Tarmac RPM", 5742 * shooterGearRatio * 0.6);
+    // m_shooterMotorL.Set(m_shooterSlewLimiter.Calculate(shooterRPM, shooterTargetRPM));
+    // m_shooterMotorR.Set(m_shooterBangBang.Calculate(shooterRPM, shooterTargetRPM));
+  //}
   else {
     m_shooterMotorL.Set(0);
     m_shooterMotorR.Set(0);
-    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("ledMode", 1); //Limelight is off by default
-    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber("camMode", 1); //driver cam mode ("backup camera")
 for (int i = 0; i < kLength; i++) {
    m_ledBuffer[i].SetRGB(255,0,0);}
   m_led.SetData(m_ledBuffer);
@@ -828,6 +732,10 @@ for (int i = 0; i < kLength; i++) {
   //   currentDriveMode.swap(altDriveMode);
   // }
 
+  if (Pilot->GetYButtonPressed()){
+    // leftJoystick = -1*leftJoystick;
+  }
+
   if (Pilot->GetAButtonPressed()){
     LowGear();
     //Low Gear
@@ -837,6 +745,25 @@ for (int i = 0; i < kLength; i++) {
     HighGear();
     //High Gear
   }
+  
+/********************************************************************************************************************************
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##
+                                  ##                ##    
+                                  ##                ##
+                                  ##                ##
+                                  ##########        ##########          
+                                            LIMELIGHT
+ *******************************************************************************************************************************/ 
+  std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+  double tx = table->GetNumber("tx",0.0); 
+  double ty = table->GetNumber("ty",0.0);   
+  double ta = table->GetNumber("ta",0.0);                  
+  double ts = table->GetNumber("ts",0.0);                  
+  double tv = table->GetNumber("tv", 0.0);
+  
+  
 }
 
 void Robot::DisabledInit() {}
