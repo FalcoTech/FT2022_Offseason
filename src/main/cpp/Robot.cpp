@@ -756,12 +756,13 @@ for (int i = 0; i < kLength; i++) {
                                   ##########        ##########          
                                             LIMELIGHT
  *******************************************************************************************************************************/ 
-  std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
-  double tx = table->GetNumber("tx",0.0); 
-  double ty = table->GetNumber("ty",0.0);   
-  double ta = table->GetNumber("ta",0.0);                  
-  double ts = table->GetNumber("ts",0.0);                  
-  double tv = table->GetNumber("tv", 0.0);
+  Update_LL();
+  
+  bool Do_LL = Pilot->GetYButton();
+  if (Do_LL){
+  }
+  
+  
   
   
 }
@@ -773,6 +774,27 @@ void Robot::DisabledPeriodic() {}
 void Robot::TestInit() {}
 
 void Robot::TestPeriodic() {}
+
+void Update_LL() {
+  const double LLSteer = .02;
+  
+  std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+  double tx = table->GetNumber("tx",0.0); //horizontal offset
+  double ty = table->GetNumber("ty",0.0); //vertical offset
+  double ta = table->GetNumber("ta",0.0); //target area           
+  double ts = table->GetNumber("ts",0.0); //skew
+  double tv = table->GetNumber("tv", 0.0); //if LL has valid target (0 or 1)
+  double tshort = table->GetNumber("tshort", 0.0); //Sidelength of shortest side of the fitted bounding box (pixels)
+  double tlong = table->GetNumber("tlong", 0.0); //Sidelength of longest side of the fitted bounding box (pixels)
+  double thor = table->GetNumber("tshort", 0.0); //Horizontal sidelength of the rough bounding box (0 - 320 pixels)
+  double tvert = table->GetNumber("tshort", 0.0); //Vertical sidelength of the rough bounding box (0 - 320 pixels)
+  
+  if (tv < 1) {
+    LLHasTarget = true;
+  }
+  
+  
+}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
