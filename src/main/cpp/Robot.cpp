@@ -756,10 +756,13 @@ for (int i = 0; i < kLength; i++) {
                                   ##########        ##########          
                                             LIMELIGHT
  *******************************************************************************************************************************/ 
-  Update_LL();
+  Update_LL(); //if this doesn't work, try putting the update command in the Do_LL loop
   
   bool Do_LL = Pilot->GetYButton();
   if (Do_LL){
+    if (thor > tvert && tx < -5 && tx > 5){
+      double triggerslowturn = ((tx * LLSteerAdjust) + (-.9 * Pilot->GetRightX()) + (.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis()));
+    } 
   }
   
   
@@ -775,8 +778,8 @@ void Robot::TestInit() {}
 
 void Robot::TestPeriodic() {}
 
-void Update_LL() {
-  const double LLSteer = .02;
+void Robot::Update_LL() {
+  const double LLSteerAdjust = .02;
   
   std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
   double tx = table->GetNumber("tx",0.0); //horizontal offset
@@ -786,13 +789,8 @@ void Update_LL() {
   double tv = table->GetNumber("tv", 0.0); //if LL has valid target (0 or 1)
   double tshort = table->GetNumber("tshort", 0.0); //Sidelength of shortest side of the fitted bounding box (pixels)
   double tlong = table->GetNumber("tlong", 0.0); //Sidelength of longest side of the fitted bounding box (pixels)
-  double thor = table->GetNumber("tshort", 0.0); //Horizontal sidelength of the rough bounding box (0 - 320 pixels)
-  double tvert = table->GetNumber("tshort", 0.0); //Vertical sidelength of the rough bounding box (0 - 320 pixels)
-  
-  if (tv < 1) {
-    LLHasTarget = true;
-  }
-  
+  double thor = table->GetNumber("thor", 0.0); //Horizontal sidelength of the rough bounding box (0 - 320 pixels)
+  double tvert = table->GetNumber("tvert", 0.0); //Vertical sidelength of the rough bounding box (0 - 320 pixels)
   
 }
 
