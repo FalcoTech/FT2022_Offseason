@@ -73,8 +73,7 @@ rev::SparkMaxRelativeEncoder m_leftDriveEncoder = m_leftLeadMotor.GetEncoder();
 rev::SparkMaxRelativeEncoder m_rightDriveEncoder = m_rightLeadMotor.GetEncoder();
 
 frc::DifferentialDrive m_drive{m_leftLeadMotor, m_rightLeadMotor};
-string currentDriveMode = "curve";
-string altDriveMode = "tank";
+
 frc2::PIDController driveControl{drivekP, drivekI, drivekD};
 frc::SlewRateLimiter<units::scalar> m_speedLimiter{3 / 1_s};
 
@@ -715,25 +714,17 @@ for (int i = 0; i < kLength; i++) {
   double leftJoystick = Pilot->GetLeftY();
   SmartDashboard::PutNumber("Left Drive Velocity", -1 * m_leftDriveEncoder.GetVelocity());
   SmartDashboard::PutNumber("Right Drive Velocity", -1 * m_rightDriveEncoder.GetVelocity());
-  SmartDashboard::PutString("Current Drive Mode", currentDriveMode);
-  turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
-  double triggerslowturn = (-.9 * (Pilot->GetRightX()) + ((.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis())));
+//   turningRate = (-1*(Pilot->GetRightTriggerAxis())) + Pilot->GetLeftTriggerAxis();
 
-  if (currentDriveMode == "tank"){
-    m_drive.TankDrive(leftJoystick, rightJoystick, true);
-  }
-  else if (currentDriveMode == "curve"){ 
-      // m_drive.CurvatureDrive((Pilot->GetLeftTriggerAxis() - Pilot->GetRightTriggerAxis()), (turningRate*.1)+(-1 * Pilot->GetRightX()), true);
-      m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), triggerslowturn, true);
-  }
+  double triggerslowturn = (-.9 * Pilot->GetRightX()) + (.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis());
+//   double triggerslowturn = (-.9 * (Pilot->GetRightX()) + ((.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis()))); (OLD VALUE)
+  
+  m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), triggerslowturn, true);
 
-  // if (Pilot->GetXButtonPressed()){
-  //   currentDriveMode.swap(altDriveMode);
-  // }
-
+        
   if (Pilot->GetYButtonPressed()){
-    // leftJoystick = -1*leftJoystick;
+    Limelight();
   }
 
   if (Pilot->GetAButtonPressed()){
@@ -756,19 +747,13 @@ for (int i = 0; i < kLength; i++) {
                                   ##########        ##########          
                                             LIMELIGHT
  *******************************************************************************************************************************/ 
-  Update_LL(); //if this doesn't work, try putting the update command in the Do_LL loop
-  
-  bool Do_LL = Pilot->GetYButton();
-  if (Do_LL){
-    if (thor > tvert && tx < -5 && tx > 5){
-      double triggerslowturn = ((tx * LLSteerAdjust) + (-.9 * Pilot->GetRightX()) + (.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis()));
-    } 
-  }
+  UpdateLimelight();
   
   
   
   
-}
+  
+} //Teleop End
 
 void Robot::DisabledInit() {}
 
@@ -778,20 +763,30 @@ void Robot::TestInit() {}
 
 void Robot::TestPeriodic() {}
 
-void Robot::Update_LL() {
-  const double LLSteerAdjust = .02;
+void Robot::UpdateLimelight() {
+  double tv = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tv",0.0);
+  double tx = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx",0.0);
+  double ty = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty",0.0);
+  double ta = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta",0.0);
+  double ts = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts",0.0);
+  double tshort = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tshort",0.0);
+  double tlong = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tlong",0.0);
+  double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor",0.0);
+  double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert",0.0);
   
-  std::shared_ptr<NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
-  double tx = table->GetNumber("tx",0.0); //horizontal offset
-  double ty = table->GetNumber("ty",0.0); //vertical offset
-  double ta = table->GetNumber("ta",0.0); //target area           
-  double ts = table->GetNumber("ts",0.0); //skew
-  double tv = table->GetNumber("tv", 0.0); //if LL has valid target (0 or 1)
-  double tshort = table->GetNumber("tshort", 0.0); //Sidelength of shortest side of the fitted bounding box (pixels)
-  double tlong = table->GetNumber("tlong", 0.0); //Sidelength of longest side of the fitted bounding box (pixels)
-  double thor = table->GetNumber("thor", 0.0); //Horizontal sidelength of the rough bounding box (0 - 320 pixels)
-  double tvert = table->GetNumber("tvert", 0.0); //Vertical sidelength of the rough bounding box (0 - 320 pixels)
+  double LimelightTriggerSlowTurn = (-.9 * Pilot->GetRightX()) + (.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis());
+  //(-.9 * (Pilot->GetRightX()) + ((.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis())));
+  int LimelightMountAngle = 30; //PLACEHOLDER
+  int LimelightMountHeight = 12; //inches. PLACEHOLDER
+  int LimelightTargetHeight = 104; //inches. (Rapid React Upper Hub)
   
+  int LimelightDistanceToGoal = (LimelightTargetHeight - LimelightMountHeight) / tan(LimelightMountAngle + ty);
+}
+
+void Robot::Limelight() {
+  if (-8 > tx > 8){
+    
+  }
 }
 
 #ifndef RUNNING_FRC_TESTS
