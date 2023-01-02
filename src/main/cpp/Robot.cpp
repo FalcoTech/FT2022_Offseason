@@ -774,7 +774,7 @@ void Robot::UpdateLimelight() {
   double thor = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("thor",0.0);
   double tvert = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tvert",0.0);
   
-  double LimelightTriggerSlowTurn = (-.9 * Pilot->GetRightX()) + (.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis());
+  double LimelightTriggerSlowTurn = (-.9 * Pilot->GetRightX()) + (.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis()) + (-.02 * tx);
   //(-.9 * (Pilot->GetRightX()) + ((.2 * Pilot->GetLeftTriggerAxis()) - (.2 * Pilot->GetRightTriggerAxis())));
   int LimelightMountAngle = 30; //PLACEHOLDER
   int LimelightMountHeight = 12; //inches. PLACEHOLDER
@@ -785,9 +785,12 @@ void Robot::UpdateLimelight() {
 
 void Robot::Limelight() {
   if (-8 > tx > 8){
-    
+    m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), LimelightTriggerSlowTurn, true);
+  } else {
+    m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), triggerslowturn, true);
   }
 }
+
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
