@@ -753,7 +753,7 @@ for (int i = 0; i < kLength; i++) {
   
   
   
-} //Teleop End
+} //Teleop() End
 
 void Robot::DisabledInit() {}
 
@@ -780,16 +780,19 @@ void Robot::UpdateLimelight() {
   int LimelightMountHeight = 12; //inches. PLACEHOLDER
   int LimelightTargetHeight = 104; //inches. (Rapid React Upper Hub)
   
-  int LimelightDistanceToGoal = (LimelightTargetHeight - LimelightMountHeight) / tan(LimelightMountAngle + ty);
-}
+  double LimelightDistanceToGoal = (LimelightTargetHeight - LimelightMountHeight) / tan(LimelightMountAngle + ty);
+} //UpdateLimelight() end
 
 void Robot::Limelight() {
-  if (-8 > tx > 8){
+  if ((tx < -8 || tx > 8) && (thor > tvert)){
     m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), LimelightTriggerSlowTurn, true);
-  } else {
+  } else if ((tx > -8) && (tx < 8) && (thor > tvert){
     m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), triggerslowturn, true);
+  } else {
+    //
   }
-}
+
+} //Limelight() end
 
 
 #ifndef RUNNING_FRC_TESTS
