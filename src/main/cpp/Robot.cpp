@@ -787,16 +787,12 @@ void Robot::Limelight() {
   if ((tx < -8 || tx > 8) && (thor > tvert)){
     m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), LimelightTriggerSlowTurn, true);
     bool LimelightAligned = false;
-  
-  } else if (){
+  } else if ((-8 < tx < 8) && (thor > tvert)){
     m_drive.CurvatureDrive(( .9 * Pilot->GetLeftY()), triggerslowturn, true);
-    bool LimelightAligned = true;
-    
+    bool LimelightAligned = true;    
   }
   
-  if (LimelightAligned == true){
-    m_shooterMotorL.Set(ControlMode::PercentOutput, 0.40);
-    m_shooterMotorR.Set(ControlMode::PercentOutput, 0.40);
+
   
   } 
 
